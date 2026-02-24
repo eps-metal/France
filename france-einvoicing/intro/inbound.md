@@ -6,13 +6,13 @@
 
 - An e-invoice is a document exchanged in a structured, machine-readable format — not a scanned PDF or an email attachment
 - Traditional invoices (paper, PDF, email) require manual data entry; structured e-invoices are read and processed directly by software
-- Structured data enables straight-through processing: no re-keying, no OCR errors, automatic matching against purchase orders
+- Structured data enables straight-through processing (receipt to posting without manual steps): no re-keying, no OCR errors, automatic matching against purchase orders
 - Compliance becomes auditable by design — every field is discrete, timestamped, and traceable
 
 ### Why Is France Mandating It?
 
 - The VAT gap — the difference between VAT owed and VAT collected — costs France billions annually; real-time invoice data lets the DGFiP detect fraud and underreporting earlier
-- EU Directive 2014/55/EU established a European baseline for e-invoicing in public procurement; France is extending the obligation to all domestic B2B transactions
+- An EU directive established a European baseline for e-invoicing in public procurement; France is extending that obligation to all domestic B2B transactions
 - Structured invoices modernise finance operations: faster payment cycles, reduced disputes, lower processing costs for both buyers and suppliers
 - The DGFiP gains near-real-time visibility into transaction data, enabling more accurate VAT pre-filling and audit targeting
 
@@ -22,8 +22,8 @@
 
 | Category | Definition | Must Receive By | Must Send By |
 |---|---|---|---|
-| GE (Grande Entreprise) | 5,000+ employees; >€1.5B turnover or >€2B balance sheet | Sept 1, 2026 | Sept 1, 2026 |
-| ETI (Entreprise de Taille Intermédiaire) | 250–5,000 employees; <€1.5B turnover or <€2B balance sheet | Sept 1, 2026 | Sept 1, 2026 |
+| GE (Grande Entreprise) | 5,000+ employees; turnover exceeds €1.5B or balance sheet exceeds €2B | Sept 1, 2026 | Sept 1, 2026 |
+| ETI (Entreprise de Taille Intermédiaire) | 250–5,000 employees; turnover does not exceed €1.5B or balance sheet does not exceed €2B | Sept 1, 2026 | Sept 1, 2026 |
 | SME (PME) | Up to 250 employees | Sept 1, 2026 | Sept 1, 2027 |
 | Micro-enterprise | Below SME thresholds | Sept 1, 2026 | Sept 1, 2027 |
 
@@ -38,12 +38,21 @@
 
 ### Getting Ready to Receive — The Short Version
 
-1. Choose a PA (Plateforme Agréée) — 101 are approved as of January 2026; this platform acts as your certified inbox for all incoming e-invoices
+1. Choose a PA (Plateforme Agréée) — 101 are approved as of January 17, 2026; this platform acts as your certified inbox for all incoming e-invoices
 2. Register your business in the national directory (Annuaire) via your PA — this is how sending platforms know where to deliver your invoices
 3. Ensure your ERP or AP system can receive and process the structured formats (UBL, CII, or Factur-X) that will arrive from your suppliers
 
-### Key Term: PA (Plateforme Agréée)
+### Key Terms: PA and Annuaire
 
-- A PA (Plateforme Agréée) is a platform certified by the DGFiP to exchange e-invoices between businesses; it handles transmission, format validation, and reporting obligations on your behalf
+- A **PA** (Plateforme Agréée) is a platform certified by the DGFiP to exchange e-invoices between businesses; it handles transmission, format validation, and reporting obligations on your behalf
 - All e-invoices under the French mandate travel PA to PA — invoices do not arrive by email; if you have no PA, you cannot receive compliant invoices
+- The **Annuaire** is a national directory maintained by the PPF (the government's public invoicing portal); when a supplier wants to send you an invoice, their PA looks up your company in the Annuaire to find your PA's address
 - As of January 17, 2026, 101 PAs are listed and approved; you choose one based on your ERP integration, commercial terms, and service requirements
+
+## What's Next
+
+### From Here to the Intermediate Level
+
+- You now understand what e-invoicing is, why France is mandating it, and what receiving an e-invoice requires
+- The next level covers how the ecosystem actually works: how invoices travel between platforms, how the Annuaire routes them, and what formats you will receive
+- It also covers your obligations as a receiver — including e-reporting requirements that apply even when you are the one being invoiced
