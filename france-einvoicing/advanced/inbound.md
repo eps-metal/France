@@ -167,12 +167,39 @@
 | AS4 | EDI, async | Same as AS2 with WS-Security layer | Preferred for new EDI implementations requiring message-level security |
 | REST API | HTTP, sync/event | Modern integrations; event-driven architectures | DGFiP spec v3.1 defines exact endpoints; OAuth 2.0 (client credentials flow) for authentication |
 
+### REST API: Technical Detail
+
+| Aspect | Specification |
+|---|---|
+| Authentication | OAuth 2.0 client credentials flow — request a bearer token from the PA's token endpoint; include as `Authorization: Bearer <token>` on every API call |
+| Token lifetime | Typically 3,600 seconds (1 hour); read `expires_in` from the token response — do not hard-code; refresh before expiry |
+| Invoice submission | `POST` to the PA's invoice endpoint with the invoice payload as `multipart/form-data` or `application/xml`; exact path defined per PA, not standardised in DGFiP spec |
+| Status query | `GET /invoices/{id}/status` (or PA-equivalent); poll periodically — coordinate polling interval with your PA to avoid rate-limit errors |
+| Webhook / push events | Some PAs support push notification callbacks as an alternative to polling — not mandated by DGFiP spec; PA-specific; reduces latency and polling overhead |
+| Error responses | HTTP 4xx for validation failures; PA returns a structured error body containing the DGFiP error code and the specific BR-FR-CTC rule that failed; HTTP 5xx for PA-side faults |
+
+- Implement token refresh as a background process, not inline with invoice submission — a token expiry mid-batch should not cause invoice loss
+- Treat `POST` submission as non-idempotent unless your PA explicitly supports idempotency keys — on network failure, query for invoice status before deciding whether to resubmit
+
 ### Peppol Interoperability
 
 - AIFE (Agence pour l'Informatique Financière de l'État, via Chorus Pro) is the designated French Peppol Authority — the national access point connecting France to the European Peppol network; DGFiP governs the mandate but AIFE holds the Peppol authority role
 - Cross-border invoices arriving from EU Peppol senders can reach French recipients via their PA; the PA acts as the bridge between the Peppol network and the domestic Y-model
 - Peppol BIS 3.0, which is built on UBL 2.1, is the compatible format for cross-border Peppol invoices entering the French network
 - For multinational supply chains: a French recipient connected to a single PA can receive invoices from both domestic French senders and EU Peppol-enabled senders without separate onboarding per country
+
+### Peppol 4-Corner Model: Mapping to the Y-Model
+
+| Peppol Concept | Y-Model Equivalent | Notes |
+|---|---|---|
+| Corner 1 — sender's Access Point | Sender's PA | French sender's PA acts as the Peppol Access Point for outgoing cross-border invoices |
+| Corner 2 — receiver's Access Point | Recipient's PA | Recipient's PA receives Peppol-delivered invoices and injects them into the domestic Y-model flow |
+| Corner 3 — SMP (Service Metadata Publisher) | Annuaire | Peppol SMP lookup identifies the recipient's Access Point; Annuaire performs this function for France-domestic routing |
+| Corner 4 — SML (Service Metadata Locator) | Not directly applicable | SML is the Peppol-wide root directory; within France, the Annuaire is the equivalent |
+
+- A French recipient registered in the Annuaire with a Peppol-capable PA automatically receives invoices from EU Peppol senders — no separate Peppol registration is required beyond your PA onboarding
+- Peppol cross-border invoices use BIS 3.0 (UBL 2.1 profile) for the international segment; CIUS-FR extensions apply only to the domestic French leg of the transaction
+- Not all certified PAs have activated Peppol connectivity — confirm Peppol capability explicitly with your PA during selection if cross-border receipt is in scope
 
 ## Archiving
 
