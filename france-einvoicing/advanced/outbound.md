@@ -76,21 +76,20 @@
 | Payment amount | Amount paid — may be partial for installment arrangements |
 | Payment method | How payment was made (transfer, card, cash, etc.) |
 
-- Payment data must be reported within the period defined in DGFiP implementation orders; your PA handles submission once your ERP signals payment receipt
-- Specific timing windows are subject to DGFiP implementation orders — verify the current schedule with your PA and legal counsel before go-live
+- Payment data must be reported within the period defined in DGFiP implementation orders; timing windows are subject to implementing decree — verify the current schedule with your PA and legal counsel before go-live
 
 ## Legal Framework
 
 ### PLF 2026: Key Provisions for Senders
 
-- Confirms the mandatory sending timeline: September 1, 2026 for large enterprises (GE) and mid-size enterprises (ETI); September 1, 2027 for SMEs and microenterprises
+- Confirms the mandatory sending timeline: September 1, 2026 for GE and ETI; September 1, 2027 for SMEs and microenterprises — note the asymmetry: all businesses must be able to **receive** from September 1, 2026, even if their sending deadline is later
 - Establishes the Annuaire (the DGFiP routing directory) as a legally binding mechanism — all B2B invoice routing must use the Annuaire via a certified PA; bypassing it is not legally compliant
 - Defines PA certification requirements and grants DGFiP the authority to revoke PA certification — senders bear responsibility for ensuring their PA remains certified
 - Confirms that e-reporting scope covers B2C transactions, cross-border B2B transactions, and payment data — all three streams are legally required, not optional
 
 ### Penalties for Non-Compliance
 
-| Violation | Penalty | Annual Cap |
+| Violation | Proposed Penalty (PLF 2026) | Annual Cap |
 |---|---|---|
 | Failure to issue e-invoice | €15 per invoice | €15,000/year |
 | Failure to e-report or late e-reporting | €250 per transmission | €15,000/year |
