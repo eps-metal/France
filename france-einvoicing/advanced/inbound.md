@@ -210,6 +210,35 @@
 - Altering, converting, or re-rendering the archived format voids its legal evidentiary value; what was received must be what is stored
 - DGFiP auditors can request access to the archive at any time during the retention period; PA-based certified archiving services typically provide a compliant audit export capability that satisfies this obligation
 
+### Archiving Technical Standards
+
+| Standard | Scope |
+|---|---|
+| NF Z42-013 | French standard for trustworthy archival of electronic documents — defines integrity protection (hash + signature), chain-of-custody metadata, and audit log requirements |
+| NF Z42-020 | Extends NF Z42-013 for digital archiving systems; referenced in PA certification requirements |
+| EN 16931 XML payload | The original structured file (UBL 2.1 or CII XML) must be archived unmodified — format conversion or re-rendering voids evidentiary value |
+| PDF/A-3 (Factur-X) | The complete PDF/A-3 container with embedded XML must be archived as received; do not strip the XML attachment |
+
+- NF Z42-013 certification is typically held by your PA or a dedicated archiving service provider — you do not implement it yourself unless you operate your own archive infrastructure
+- To satisfy a DGFiP audit request, the archive must produce: the original file, its hash as recorded at time of archival, and the chain-of-custody log — confirm your PA or archive provider can generate this export
+- Cloud-based certified archiving is available as a managed service from most certified PAs — confirm during PA selection whether archiving is included in the service or priced separately
+
+## Payment Data Reporting
+
+### Payment Reporting Mechanics for Received Invoices
+
+| Field | Source | Notes |
+|---|---|---|
+| Invoice reference | BT-1 from the received invoice | Must match the invoice identifier exactly as submitted |
+| Payment date | ERP settlement date | Actual settlement date, not the due date |
+| Payment amount | Amount settled | Report each instalment separately for partial payments |
+| Payment method | ERP / treasury system payment record | SEPA transfer, card, cash, cheque — per DGFiP code list |
+
+- Payment data reporting for received B2B invoices is an AP-side obligation — your system must signal payment completion to your PA, which submits the event to DGFiP
+- Reporting is periodic, not real-time — DGFiP implementing decrees define the reporting window; typical alignment is with VAT return periods (monthly or quarterly depending on your VAT regime)
+- Submission uses the same PA API or EDI channel as invoice status updates — your PA documentation defines the specific endpoint and payload schema for payment event data
+- The obligation is active from your mandatory receipt date (September 1, 2026) — payment reporting is not deferred to your sending deadline
+
 ## From Spec to Product
 
 ### What the Product Level Covers
