@@ -27,6 +27,14 @@
 | Calculation mismatch | VAT amount doesn't match rate × base | Reject with code + rule reference |
 | Business rule violation | Payment terms exceed legal maximum | Reject with code + rule reference |
 
+### Attachments: BG-24 Additional Supporting Documents
+
+- EN 16931 defines `BG-24` (Additional Supporting Documents) as the mechanism for attaching or referencing supporting files alongside an invoice
+- Three permitted attachment modes in CIUS-FR: embedded binary (Base64-encoded within the XML), external URI reference, and hash + reference pair for externally stored documents
+- Your AP system must handle all three modes: extract embedded attachments, follow URI references, and retain hash metadata — BG-24 content is part of the archived invoice package
+- PA validation covers BG-24 structural conformance (correct XML element usage); it does not validate the content of attachments or the accessibility of external URIs — broken URIs will not cause rejection at the PA but will cause processing failures downstream
+- Common attachment types: delivery notes, purchase orders, contracts, proof of acceptance — attachment type is at the sender's discretion
+
 ## Invoice Status Lifecycle
 
 ### Status States: Full Technical View
@@ -111,6 +119,23 @@
 - Each legal entity (SIRET) must be individually registered in the Annuaire — the Annuaire entry maps each SIRET to the group's PA; the PA must route by recipient SIRET, not just by SIREN
 - Inter-company invoices within a group (entity A invoices entity B) follow the same Y-model path as external supplier invoices — there is no internal shortcut; both SIRETs must be in the Annuaire
 - If different group entities use different PAs, inter-company invoices must transit both PAs via the interoperability layer — validate this flow during pre-production testing, as it exercises the full PA-to-PA handoff
+
+## Testing and Pre-Production
+
+### Integration Testing: What to Validate
+
+- DGFiP opened a formal interoperability testing environment in October 2025 for PA-to-PA connectivity validation — the formal DGFiP-managed window closed January 14, 2026; your PA's own sandbox environment is now the primary testing channel
+- Request sandbox access from your PA during onboarding — sandbox credentials, test SIREN/SIRET values, and test PA identifiers are PA-specific; do not use live production SIRENs in testing
+- For format validation without a PA sandbox, use the FNFE-MPE online validator — publicly available, validates UBL 2.1, CII, and Factur-X against EN 16931 schematron rules and CIUS-FR extensions; returns the same BR-FR-CTC error codes your PA will return
+- End-to-end test scenarios to cover before go-live:
+
+| Scenario | What It Tests |
+|---|---|
+| Valid invoice → PA acceptance | Happy path: format, CIUS-FR fields, Annuaire routing |
+| Missing SIREN → structured rejection | CIUS-FR validation error handling in your ERP |
+| Business refusal by recipient | Refusée status flow back to sender system |
+| Credit note with BT-25 reference | Credit note round-trip and AP matching |
+| Status messages back to ERP | Déposée, Reçue, Approuvée returned correctly |
 
 ## Connectivity
 
