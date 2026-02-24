@@ -49,6 +49,32 @@
 - **Refusal path**: Déposée → Reçue → Refusée — invoice is technically valid and legally exists, but the recipient raises a business-level dispute; requires resolution between buyer and seller outside the PA flow
 - **En Anomalie path**: Déposée → Reçue → En Anomalie → (clarification exchanged) → Approuvée — recipient raises a query rather than an outright refusal; invoice remains live while the issue is resolved
 
+## Credit Notes and Corrective Invoices
+
+### BT-3 Invoice Type Codes
+
+| BT-3 Code | Document Type | Use Case |
+|---|---|---|
+| 380 | Commercial Invoice | Standard supply of goods or services |
+| 381 | Credit Note | Full or partial reversal of a prior invoice; reduces the amount owed |
+| 383 | Debit Note | Upward adjustment to a prior invoice; increases the amount owed |
+| 384 | Corrective Invoice | Error correction that replaces the original invoice |
+| 389 | Self-Billed Invoice | Buyer generates the invoice on behalf of the supplier |
+
+### Receiving a Credit Note or Corrective Invoice
+
+- Credit notes (381), debit notes (383), and corrective invoices (384) follow the same Y-model path and PA validation rules as commercial invoices — no special routing or separate channel
+- All three types must reference the original invoice via `BT-25` (Preceding Invoice Reference) — your AP system should validate that the referenced invoice exists in your records before posting
+- A corrective invoice (384) is not a cancellation — it replaces the original and must be treated as the authoritative version for that transaction; mark the original as superseded
+- VAT on a credit note reverses the VAT from the original invoice — process the reversal correctly in your AP system, not as a new negative charge
+
+### Invoice Amendment: No In-Flight Modification
+
+- Once an invoice has status Déposée, it cannot be modified — PA transmission is immutable
+- The only compliant amendment path is: (1) sender issues Annulée status (cancellation by mutual agreement), then (2) sender reissues a new corrective invoice (BT-3 = 384) or credit note (381) with a new `BT-1` invoice number
+- Annulée requires agreement from both parties — unilateral cancellation by the sender is not sufficient; both PAs must confirm the status
+- If the error is discovered after Approuvée status, the correct flow is credit note (reversal) + new corrected invoice — not cancellation; Annulée is only available before Approuvée
+
 ## Error Handling and Disputes
 
 ### Rejection vs. Refusal — A Critical Distinction
