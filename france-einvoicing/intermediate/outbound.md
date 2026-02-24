@@ -4,14 +4,15 @@
 
 ### What Must a PA Do?
 
-- Certified by DGFiP — only a PA (Plateforme Agréée) may transmit mandatory e-invoices on your behalf
+- Certified by DGFiP — only a certified PA may legally represent you for mandatory e-invoice transmission and e-reporting
 - Handles both outbound sending and inbound receipt, acting as your single point of entry and exit on the network
 - Validates every invoice against format rules and CIUS-FR requirements before transmission; rejected invoices never leave your PA
 - Queries the Annuaire to identify the recipient's PA and routes the invoice accordingly
 - Submits e-reporting data to DGFiP for B2C transactions, cross-border B2B transactions, and payment events
-- 101 PAs approved as of January 17, 2026 — selection is a strategic decision, not just a vendor choice
 
 ### How to Choose the Right PA
+
+> 101 PAs were certified as of early 2026 — PA selection is a strategic decision, not just a vendor choice.
 
 | Criterion | Why It Matters |
 |---|---|
@@ -54,14 +55,14 @@
 
 - For sales to consumers, no invoice travels via the PA network — there is no B2C counterpart registered in the Annuaire
 - Instead, your PA submits transaction data to DGFiP: sale date, total amount, and VAT breakdown by rate
-- This obligation covers all B2C sales regardless of amount or channel
+- This obligation covers all B2C sales regardless of amount or channel (there is no minimum threshold for B2C reporting under the French mandate)
 - Your PA handles submission, but must be configured to receive the transaction data from your billing or POS system — this integration is your responsibility to set up
 
 ### Cross-Border B2B: What You Must Report
 
 - Invoices issued to businesses established outside France do not travel via the PA network — foreign entities are not registered in the Annuaire
 - Your PA still submits transaction data to DGFiP for those sales, covering your French VAT obligations
-- Core data fields mirror B2C reporting: seller SIREN, invoice date, amounts, VAT breakdown by rate, and buyer country
+- Required fields: seller SIREN, invoice date, amounts, VAT breakdown by rate — plus a **buyer country code** (not present in B2C reporting; replaces the buyer SIREN since foreign entities have no SIREN)
 - Your PA must be configured to identify cross-border transactions — typically via buyer VAT number format or country code in the invoice data
 
 ### Payment Data Reporting
