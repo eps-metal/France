@@ -33,10 +33,10 @@ The "Y" shape: two legs — the sender's PA and the recipient's PA — converge 
 ### Registering in the Annuaire
 
 - Registration is performed by your PA on your behalf — you do not register directly with DGFiP or PPF; your PA submits your SIREN/SIRET and connectivity details to the Annuaire
-- Your PA will require: your SIREN (company-level identifier) and every SIRET (establishment-level identifier) that will receive invoices, plus any routing preferences if multiple SIRETs share the PA
+- Your PA will require your SIREN (company-level identifier) and every SIRET (establishment-level identifier) that will receive invoices
+- If multiple SIRETs share the same PA, provide routing preferences at registration so the PA can route by establishment
 - Once registered, your entry is visible to all other PAs on the network — any PA routing an invoice to your SIREN/SIRET will find your PA automatically and route accordingly
 - For group structures with multiple SIRETs, each establishment must have its own Annuaire entry even if all establishments are served by the same PA
-- If you change PA, the old PA must deregister your SIREN/SIRET and the new PA must register it — there is a brief window during migration when routing may fail; schedule migrations carefully
 
 ## The Inbound Invoice Journey
 
@@ -109,7 +109,7 @@ The "Y" shape: two legs — the sender's PA and the recipient's PA — converge 
 
 - **Critical asymmetry**: all businesses must receive e-invoices from September 1, 2026 even if their own sending deadline is September 1, 2027 — SMEs and micro-enterprises cannot defer their PA receipt configuration
 - An SME receiving invoices from a large supplier must be PA-connected from September 1, 2026; if they are not, they are non-compliant — not the sender
-- During the transition window (Sept 2026 – Sept 2027), large enterprise senders must be prepared to handle routing for SME customers who may not yet be in the Annuaire — this edge case has no formal DGFiP fallback channel; monitor PA guidance
+- During the transition window (Sept 2026 – Sept 2027), any SME customer not yet registered in the Annuaire is non-compliant from September 1, 2026 — DGFiP has not defined a formal fallback channel for this scenario; monitor your PA's guidance on how to handle unroutable recipients
 
 ### PA Decertification and Migration
 
