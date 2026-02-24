@@ -89,3 +89,23 @@
 - Your ERP must be configured to populate these fields — they are absent from most non-French invoice templates and will not be added automatically by a generic e-invoicing adapter
 - Your PA validates CIUS-FR compliance as part of its pre-send checks; an invoice that fails CIUS-FR validation is rejected and never transmitted — fixing it is your responsibility before resubmission
 - The authoritative technical reference is DGFiP External Specifications v3.1; the advanced module covers its implementation in detail
+
+## Transition Period
+
+### What Senders Must Plan For: 2026 to 2027
+
+| Date | Obligation Active For |
+|---|---|
+| September 1, 2026 | GE and ETI must send e-invoices via PA; all businesses must receive |
+| September 1, 2027 | SMEs and micro-enterprises must send e-invoices via PA |
+
+- From September 1, 2026, GE and ETI must route all domestic B2B invoices via their PA — there is no grace period for individual customers or transaction types
+- E-reporting obligations are active from your mandatory sending date — payment data reporting, B2C transaction reporting, and cross-border B2B reporting all begin on the same date as your sending mandate; they are not deferred
+- During 2026–2027, SME/micro senders may not yet be PA-connected — if you receive invoices from them, you may still receive paper or PDF during that window; your PA receipt configuration must handle both e-invoice and legacy formats in parallel
+
+### PA Decertification: Sender Risk
+
+- DGFiP can revoke a PA's certification at any time — a decertified PA cannot legally send invoices or submit e-reports; affected senders must migrate immediately to remain compliant
+- Monitor the official DGFiP PA registry as part of your compliance programme — certification status is not automatically communicated to PA customers
+- Ensure your PA contract includes decertification notice requirements and assisted migration provisions; a PA migration without notice could cause invoice delivery failures with legal and commercial consequences
+- If your PA is decertified mid-period, invoices cannot be held and sent later — the legal clock runs from the invoice date; delays caused by PA failure do not suspend penalty exposure
