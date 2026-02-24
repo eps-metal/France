@@ -30,6 +30,14 @@ The "Y" shape: two legs — the sender's PA and the recipient's PA — converge 
 - Sending PAs query the Annuaire in real time to discover the correct destination PA before delivering any invoice
 - Without an Annuaire entry, a business cannot receive e-invoices — registration via a PA is a prerequisite for participation
 
+### Registering in the Annuaire
+
+- Registration is performed by your PA on your behalf — you do not register directly with DGFiP or PPF; your PA submits your SIREN/SIRET and connectivity details to the Annuaire
+- Your PA will require: your SIREN (company-level identifier) and every SIRET (establishment-level identifier) that will receive invoices, plus any routing preferences if multiple SIRETs share the PA
+- Once registered, your entry is visible to all other PAs on the network — any PA routing an invoice to your SIREN/SIRET will find your PA automatically and route accordingly
+- For group structures with multiple SIRETs, each establishment must have its own Annuaire entry even if all establishments are served by the same PA
+- If you change PA, the old PA must deregister your SIREN/SIRET and the new PA must register it — there is a brief window during migration when routing may fail; schedule migrations carefully
+
 ## The Inbound Invoice Journey
 
 ### Step-by-Step: From Sender to Your System
@@ -88,6 +96,27 @@ The "Y" shape: two legs — the sender's PA and the recipient's PA — converge 
 - You do not submit e-reports for invoices you receive — outbound e-reporting (transaction data) is the sender's obligation, not yours
 - Your PA handles all format and CIUS-FR validation before an invoice reaches your system; you are not responsible for validating inbound invoice structure
 - Archiving obligations are covered at the advanced level; your PA may offer certified archiving as a managed service
+
+## Transition Period
+
+### September 2026 to September 2027: Dual-Mode Operation
+
+| Period | Who Must Send | Who Must Receive |
+|---|---|---|
+| Before September 1, 2026 | No one (mandate not yet active) | No one mandated |
+| September 1, 2026 onwards | GE + ETI | All businesses — GE, ETI, SME, micro |
+| September 1, 2027 onwards | All businesses | All businesses (already required) |
+
+- **Critical asymmetry**: all businesses must receive e-invoices from September 1, 2026 even if their own sending deadline is September 1, 2027 — SMEs and micro-enterprises cannot defer their PA receipt configuration
+- An SME receiving invoices from a large supplier must be PA-connected from September 1, 2026; if they are not, they are non-compliant — not the sender
+- During the transition window (Sept 2026 – Sept 2027), large enterprise senders must be prepared to handle routing for SME customers who may not yet be in the Annuaire — this edge case has no formal DGFiP fallback channel; monitor PA guidance
+
+### PA Decertification and Migration
+
+- DGFiP has authority under PLF 2026 to revoke PA certification — a decertified PA cannot legally transmit invoices or e-reports; all in-flight transmissions halt
+- You bear legal responsibility for ensuring your PA remains certified — verify against the official DGFiP PA registry periodically; the list changes as new PAs are added or existing ones are reviewed
+- Migration to a new PA requires: (1) sign with new PA, (2) new PA registers your SIREN/SIRET in the Annuaire, (3) old PA removes the entry, (4) update your API/EDI connection — coordinate steps 2 and 3 tightly to avoid a routing gap
+- Ensure your PA contract specifies notice obligations in the event of decertification and provides for assisted migration — this is a key procurement point during PA selection, not an afterthought
 
 ## What's Next
 
