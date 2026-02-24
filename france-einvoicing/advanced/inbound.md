@@ -57,6 +57,19 @@
 - **Refusal path**: Déposée → Reçue → Refusée — invoice is technically valid and legally exists, but the recipient raises a business-level dispute; requires resolution between buyer and seller outside the PA flow
 - **En Anomalie path**: Déposée → Reçue → En Anomalie → (clarification exchanged) → Approuvée — recipient raises a query rather than an outright refusal; invoice remains live while the issue is resolved
 
+### Status Lifecycle: Timing and SLA Expectations
+
+| Transition | Indicative Timing | Governed by SLA? |
+|---|---|---|
+| Déposée → Reçue (PA validates and routes) | Minutes to 1 hour under normal conditions | PA service contract, not DGFiP spec |
+| Reçue → Approuvée (recipient acknowledges) | Recipient-defined; typically 24–72 hours for automated systems | No regulatory deadline |
+| Rejetée returned to sender | Near-synchronous in most PA implementations | Per PA implementation |
+| Status relay back to sender ERP | Synchronous for REST; queued for AS2/AS4 | Protocol-dependent |
+
+- Status timing is not standardised by DGFiP at the invoice level — transmission SLAs are between you and your PA, established in your service agreement
+- For AS2/AS4 flows, the MDN (Message Disposition Notification) confirms transport delivery; invoice status is a separate, subsequent event — do not confuse transport acknowledgement with invoice status
+- The legally relevant timestamp is the Déposée timestamp in the PA's audit log, not when your ERP received the status update — status delivery latency does not shift your compliance clock
+
 ## Credit Notes and Corrective Invoices
 
 ### BT-3 Invoice Type Codes
@@ -102,6 +115,13 @@
 3. Notify the sending supplier with the full error detail — not just "rejected"
 4. Supplier corrects the invoice in their ERP and resubmits via their PA
 5. The corrected submission is treated as a fresh invoice — a new status lifecycle begins from Déposée
+
+### Invoice Deduplication
+
+- Every invoice submitted to a PA is fingerprinted by sender SIREN + invoice number (`BT-1`); the PA rejects resubmissions with an identical fingerprint from the same sender
+- Deduplication is PA-level, not DGFiP-level — the exact deduplication key (SIREN + `BT-1`, or SIRET + `BT-1`) varies by PA; confirm the key with your PA during integration testing
+- A corrected resubmission (after Rejetée) may require a new invoice number if the PA registered the original number in its deduplication registry — verify with your PA whether Rejetée submissions are registered or discarded
+- For idempotent retry scenarios (network failure after submission, before acknowledgement received), do not automatically resubmit — query the PA for the status of the previous submission first to avoid a duplicate rejection
 
 ## Special Invoice Scenarios
 
