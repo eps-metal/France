@@ -7,7 +7,7 @@
 | Pillar | Role | What It Does |
 |---|---|---|
 | PA (Plateforme Agréée) | Certified exchange platform | Sends, receives, and validates invoices; submits e-reporting data to DGFiP on your behalf |
-| PPF (Portail Public de Facturation) | Government portal | Maintains the Annuaire national directory; relays data copies to DGFiP |
+| PPF (Portail Public de Facturation) | Government portal | Maintains the Annuaire directory; receives structural relay copies from PAs and forwards to DGFiP |
 | DGFiP | French tax authority | Receives e-reporting data for VAT monitoring and compliance enforcement |
 
 ### The Y-Model: How Invoices Actually Travel
@@ -19,7 +19,7 @@ The Y-model describes the path every B2B invoice takes:
 3. Sender's PA delivers the invoice directly to the Recipient's PA
 4. Recipient's PA makes the invoice available to the Recipient's ERP
 
-The "Y" shape: two legs — the sender's PA and the recipient's PA — converge at the Annuaire lookup point.
+The "Y" shape: two legs — the sender's PA and the recipient's PA — converge at the Annuaire lookup point. The convergence is the directory resolution step; once the recipient's PA is identified, the invoice travels the resolved PA-to-PA delivery channel (the stem of the Y).
 
 **Critical point:** The PPF is off to the side. It maintains the Annuaire and relays data copies to DGFiP, but it is not in the invoice delivery path. Invoices never pass through the PPF.
 
@@ -39,8 +39,8 @@ The "Y" shape: two legs — the sender's PA and the recipient's PA — converge 
 3. Supplier's PA validates the invoice format and CIUS-FR field conformance; rejects if invalid
 4. Supplier's PA queries the Annuaire with your SIREN to identify your PA
 5. Supplier's PA delivers the invoice securely to your PA
-6. Your PA validates the invoice and makes it available in your AP system or ERP
-7. Your system acknowledges receipt; the acknowledgement status flows back through the PA network to the supplier
+6. Your PA validates the invoice and makes it available via API or portal for retrieval
+7. Your AP system ingests the invoice; acknowledgement status flows back through the PA network to the supplier
 
 ### Invoice Status Lifecycle — Overview
 
@@ -59,9 +59,9 @@ The "Y" shape: two legs — the sender's PA and the recipient's PA — converge 
 
 | Format | Type | Human-Readable? | Typical Use Case |
 |---|---|---|---|
-| Factur-X | Hybrid PDF + embedded XML | Yes — PDF layer is human-readable | Mixed environments where some parties still need visual review alongside automated processing |
-| UBL 2.1 | Pure XML | No | Fully automated machine-to-machine processing; common in procurement and ERP integrations |
-| CII (Cross Industry Invoice) | Pure XML | No | Alternative to UBL; prevalent in certain industries and some legacy system integrations |
+| Factur-X | Hybrid PDF + embedded XML | Yes — PDF layer is human-readable | Mixed environments; PDF layer supports manual review |
+| UBL 2.1 | Pure XML | No | Fully automated machine-to-machine ERP integration |
+| CII (Cross Industry Invoice) | Pure XML | No | Alternative to UBL; legacy systems and select industries |
 
 ### The French Standard: EN 16931 + CIUS-FR
 
@@ -81,10 +81,18 @@ The "Y" shape: two legs — the sender's PA and the recipient's PA — converge 
 
 - When you **pay** a B2B invoice, you must report that payment event to DGFiP — this is distinct from the invoice receipt itself
 - Your PA handles the submission automatically when triggered by the payment confirmation in your system
-- The obligation applies from your respective mandatory date: GE + ETI from September 1, 2026; SMEs and micro-enterprises from September 1, 2027
+- The obligation applies from your respective mandatory date: GE + ETI from September 1, 2026; SMEs and micro-enterprises from September 1, 2027 *(dates current as of publication — verify against the official DGFiP schedule before compliance planning)*
 
 ### What You Do Not Need to Do
 
 - You do not submit e-reports for invoices you receive — outbound e-reporting (transaction data) is the sender's obligation, not yours
 - Your PA handles all format and CIUS-FR validation before an invoice reaches your system; you are not responsible for validating inbound invoice structure
 - Archiving obligations are covered at the advanced level; your PA may offer certified archiving as a managed service
+
+## What's Next
+
+### From Here to the Advanced Level
+
+- You now understand the full inbound ecosystem: the Y-model, Annuaire routing, invoice journey, formats, and receiver obligations
+- The advanced level goes deeper: the DGFiP External Specifications v3.1, the full invoice status lifecycle with technical state names, and how validation failures are handled
+- It also covers connectivity options (AS2/AS4 vs. REST API), Peppol interoperability for cross-border supply chains, and your legal archiving obligations

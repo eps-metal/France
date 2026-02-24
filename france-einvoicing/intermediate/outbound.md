@@ -23,15 +23,18 @@
 
 ## The Outbound Invoice Journey
 
-### Step-by-Step: From Your ERP to Your Customer
+### Step-by-Step: From Your ERP to Delivery
 
-1. Invoice is created in your ERP or AR system in a supported structured format (Factur-X, UBL 2.1, or CII)
-2. Invoice is transmitted to your PA via API or EDI connection
-3. Your PA validates: format conformance, EN 16931 semantic rules, and CIUS-FR mandatory fields
-4. Your PA queries the Annuaire (the PPF-maintained directory) to identify which PA serves the recipient
+1. Invoice created in your ERP/AR system in a structured format (Factur-X, UBL 2.1, or CII)
+2. Transmitted to your PA via API or EDI
+3. Your PA validates: format, EN 16931 semantic rules, CIUS-FR mandatory fields
+4. Your PA queries the Annuaire to identify the recipient's PA
+
+### Step-by-Step: Delivery and Status Return
+
 5. Your PA delivers the invoice to the recipient's PA over the certified network
-6. The recipient's PA delivers the invoice to the recipient's ERP or AP system
-7. Status messages (delivery confirmation, acceptance, rejection) flow back through the same chain to your ERP
+6. Recipient's PA delivers to the recipient's ERP or AP system
+7. Status messages (delivered, accepted, rejected) return through the chain to your ERP
 
 ### What Your PA Does Before Sending
 
