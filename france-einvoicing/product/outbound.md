@@ -4,7 +4,7 @@
 
 ### Tungsten AR and the Y-Model
 
-Tungsten AR products sit between the ERP — which generates invoice source data — and the Platforme d'Accès (PA), which transmits the structured invoice to the recipient via the central hub (PPF or a recipient-connected PA). Tungsten is responsible for transforming ERP data into a compliant structured format and handing it off to the PA for onward delivery.
+Tungsten AR products sit between the ERP — which generates invoice source data — and the PA (Plateforme Agréée), which transmits the structured invoice directly to the recipient's PA via the Y-model. Tungsten is responsible for transforming ERP data into a compliant structured format (Factur-X, UBL 2.1, or CII) and handing it off to the PA for validation, routing, and onward delivery.
 
 > **[STUB: Diagram and narrative showing the precise position of Tungsten AR products in the Y-model outbound flow — which component generates the structured invoice, which connects to the PA, via which protocol, and how the outbound journey is triggered]** — content to be added in a subsequent iteration.
 
