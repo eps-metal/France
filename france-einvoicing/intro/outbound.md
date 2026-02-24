@@ -15,10 +15,14 @@
 |---|---|---|
 | GE (Grande Entreprise) | 5,000+ employees; >€1.5B turnover or >€2B balance sheet | Sept 1, 2026 |
 | ETI (Entreprise de Taille Intermédiaire) | 250–5,000 employees; <€1.5B turnover or <€2B balance sheet | Sept 1, 2026 |
-| SME (PME) | Up to 250 employees | Sept 1, 2027 |
-| Micro-enterprise | Below SME thresholds | Sept 1, 2027 |
+| SME (PME) | Fewer than 250 employees; turnover ≤€50M or balance sheet ≤€43M | Sept 1, 2027 |
+| Micro-enterprise | Fewer than 10 employees; turnover ≤€2M or balance sheet ≤€2M | Sept 1, 2027 |
 
-> **Note:** All categories — including SME and micro-enterprises — must be able to **receive** e-invoices by **Sept 1, 2026**, regardless of their sending deadline.
+### All Businesses Must Receive by September 1, 2026
+
+- The receiving obligation applies to **all companies** — GE, ETI, SME, and micro-enterprises alike — from September 1, 2026
+- This means even if your sending deadline is September 2027, you must be ready to accept e-invoices from your suppliers a full year earlier
+- Register with a PA and list your business in the Annuaire before September 1, 2026 — your suppliers will need your routing address to send to you
 
 ## E-Reporting: The Other Obligation
 

@@ -71,12 +71,17 @@ The "Y" shape: two legs — the sender's PA and the recipient's PA — converge 
 
 ## Your Obligations as a Receiver
 
-### E-Reporting: Payment Data Reporting
+### E-Reporting: What It Covers
 
-- E-reporting is a separate obligation from e-invoicing: when you pay a B2B invoice, you must report that payment event to DGFiP
-- This payment data reporting applies even though the invoice itself was already transmitted via PA-to-PA exchange — the payment event is distinct and must be declared independently
-- Your PA handles the submission to DGFiP automatically when triggered by the payment confirmation in your system
-- The obligation applies to all company sizes from their respective mandatory sending deadlines (GE + ETI from 1 September 2026; SMEs and micro-enterprises from 1 September 2027)
+- E-reporting is a separate, parallel obligation to e-invoicing — it applies to transaction types that do not go through the PA-to-PA invoice network
+- E-reporting covers three categories: **B2C sales** (seller reports transaction data to DGFiP), **cross-border B2B sales** (seller reports data for invoices to foreign businesses), and **payment data** (payer reports when a B2B/B2C/B2G invoice is settled)
+- As a receiver of domestic B2B invoices, your relevant e-reporting obligation is the payment data category — the other two (B2C, cross-border) are the sender's responsibility
+
+### E-Reporting: Your Payment Data Obligation
+
+- When you **pay** a B2B invoice, you must report that payment event to DGFiP — this is distinct from the invoice receipt itself
+- Your PA handles the submission automatically when triggered by the payment confirmation in your system
+- The obligation applies from your respective mandatory date: GE + ETI from September 1, 2026; SMEs and micro-enterprises from September 1, 2027
 
 ### What You Do Not Need to Do
 
