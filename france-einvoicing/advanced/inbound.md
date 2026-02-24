@@ -95,6 +95,23 @@
 4. Supplier corrects the invoice in their ERP and resubmits via their PA
 5. The corrected submission is treated as a fresh invoice — a new status lifecycle begins from Déposée
 
+## Special Invoice Scenarios
+
+### Self-Billing (Auto-Facturation)
+
+- In a self-billing arrangement, the buyer (AP function) generates the invoice on behalf of the supplier — the buyer acts as the sender in the PA network, not the receiver
+- BT-3 code for self-billed invoices: **389** — this is the only code acceptable for self-billing; submitting a self-billed invoice with BT-3 = 380 will fail CIUS-FR validation
+- CIUS-FR still requires SIREN/SIRET for both parties, but the positions are reversed: the buyer's SIREN/SIRET appears in the seller fields (`BT-29/BT-30`) and the supplier's SIREN/SIRET appears in the buyer fields (`BT-46/BT-49`)
+- The self-billing agreement must be legally in place before invoices under it can be transmitted — DGFiP does not validate the existence of the agreement, but it must be available for audit
+- From your AP perspective as the buyer-sender: your PA handles the outbound transmission, but payment data reporting for these invoices remains your obligation
+
+### Multi-Entity and Group Structures
+
+- A PA can service multiple SIRENs/SIRETs under a single technical connection — a corporate group connects once and receives invoices for all French legal entities through one PA integration
+- Each legal entity (SIRET) must be individually registered in the Annuaire — the Annuaire entry maps each SIRET to the group's PA; the PA must route by recipient SIRET, not just by SIREN
+- Inter-company invoices within a group (entity A invoices entity B) follow the same Y-model path as external supplier invoices — there is no internal shortcut; both SIRETs must be in the Annuaire
+- If different group entities use different PAs, inter-company invoices must transit both PAs via the interoperability layer — validate this flow during pre-production testing, as it exercises the full PA-to-PA handoff
+
 ## Connectivity
 
 ### AS2/AS4 vs. REST API
