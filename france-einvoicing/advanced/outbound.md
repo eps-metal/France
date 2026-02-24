@@ -124,6 +124,20 @@
 
 - Payment data must be reported within the period defined in DGFiP implementation orders; timing windows are subject to implementing decree — verify the current schedule with your PA and legal counsel before go-live
 
+### E-Reporting Submission Mechanics
+
+| Reporting Stream | Trigger | Submission Frequency |
+|---|---|---|
+| Domestic B2B | Automatic during invoice transmission — PA extracts and relays data to DGFiP | Per invoice, real-time |
+| B2C transactions | Your system pushes transaction data to your PA | Periodic — per DGFiP implementing decree; typically aligned with VAT return period |
+| Cross-border B2B | Your system pushes transaction data to your PA | Same as B2C |
+| Payment data | Your ERP/treasury signals payment to your PA | Periodic — same window as B2C |
+
+- Domestic B2B e-reporting requires no separate action from you — DGFiP data is extracted by your PA as part of the transmission process; this is the only reporting stream that is fully automatic
+- B2C and cross-border B2B e-reporting require your billing or POS system to push transaction data to your PA — this integration must be configured and tested separately from the invoice transmission integration
+- Submission uses the same PA API or EDI channel as invoice submission; your PA documentation defines the specific endpoint and payload schema for e-reporting data
+- Verify the current reporting window schedule with your PA and legal counsel before go-live — DGFiP implementing decrees govern the exact timing and the schedule may be updated
+
 ## Legal Framework
 
 ### PLF 2026: Key Provisions for Senders
