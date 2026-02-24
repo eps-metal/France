@@ -11,14 +11,30 @@
 
 ### CIUS-FR: Mandatory Fields for Outbound Invoices
 
-| Field | Description | Source in Typical ERP |
+| Field | BT Reference | Description | Source in Typical ERP |
+|---|---|---|---|
+| Seller SIREN | BT-29, scheme 0009 | 9-digit French company identifier for the seller | Company master data |
+| Seller SIRET | BT-30, scheme 0010 | 14-digit establishment identifier for the seller | Company master data |
+| Buyer SIREN | BT-46, scheme 0009 | 9-digit identifier for the buyer (domestic B2B) | Customer master data |
+| Buyer SIRET | BT-49, scheme 0010 | 14-digit buyer establishment identifier | Customer master data |
+| Invoice type code | BT-3 | 380 = commercial invoice; 381 = credit note; 383 = debit note; 384 = corrective; 389 = self-billed | Invoice transaction type mapping |
+| VAT breakdown | BG-23 group: BT-116 (taxable), BT-117 (VAT amount), BT-119 (rate) | Tax amount, taxable amount, and rate for each VAT category | Invoice line VAT calculation engine |
+| Payment terms | BT-20 (terms text), BT-9 (due date) | Due date, payment method, early payment discount if applicable | Payment terms master |
+| French legal mentions | BT-22 (invoice note) | Mandatory text under French law: late payment penalty clause, regime-specific mentions | Configuration / static text template |
+
+### Sending Credit Notes and Corrective Invoices
+
+| Document Type | BT-3 Code | Key Requirement |
 |---|---|---|
-| Seller SIREN/SIRET | 9-digit (SIREN) or 14-digit (SIRET) French business identifier for the seller | Company master data |
-| Buyer SIREN/SIRET | Same identifier for the buyer (required for domestic B2B) | Customer master data |
-| Invoice type code (BT-3) | Coded type identifying the transaction: commercial invoice, credit note, debit note, etc. | Invoice transaction type mapping |
-| VAT breakdown by rate | Tax amount, taxable amount, and applicable rate for each VAT category present on the invoice | Invoice line VAT calculation engine |
-| Payment terms | Due date, payment method, and early payment discount if applicable | Payment terms master |
-| French legal mentions | Mandatory text elements required by French law, including the late payment penalty clause and any applicable auto-entrepreneur or regime-specific mentions | Configuration / static text template |
+| Credit note | 381 | Must reference original invoice via BT-25 (Preceding Invoice Reference) |
+| Debit note | 383 | Upward adjustment; must reference original invoice via BT-25 |
+| Corrective invoice | 384 | Replaces the original; must carry a new BT-1 (Invoice Number) |
+| Self-billed invoice | 389 | Buyer generates on behalf of supplier; buyer's SIREN in seller fields |
+
+- BT-25 (Preceding Invoice Reference) is mandatory for BT-3 codes 381, 383, and 384 — omitting it fails CIUS-FR validation; populate with the BT-1 value from the original invoice
+- Credit notes and debit notes follow the same outbound Y-model path as commercial invoices — same PA validation, same Annuaire routing, same status lifecycle
+- VAT on credit notes: the VAT breakdown must mirror the original invoice's VAT rates; a credit note cannot introduce a new VAT rate not present on the original
+- E-reporting for credit notes: they are reportable transactions with signed amounts (negative for credit notes); confirm your PA correctly signs the VAT amounts before submission
 
 ## Outbound Validation
 
@@ -40,6 +56,36 @@
 | Incorrect invoice type code | Wrong BT-3 code used — e.g., credit note submitted with commercial invoice code | Map all ERP transaction types to the correct BT-3 code list; test each transaction type in pre-production |
 | Missing payment terms | Payment terms not exported from ERP into the invoice XML | Confirm payment terms are included in the XML output template, not just the PDF layer |
 | Malformed XML | ERP export encoding error, missing namespace declaration, or illegal characters | Validate XML against schema before submission; PA rejects malformed documents immediately without parsing |
+
+### Schematron Rules: Technical Reference
+
+| Aspect | Detail |
+|---|---|
+| Rule naming | `BR-FR-CTC-NNN` (e.g., `BR-FR-CTC-001`) — all CIUS-FR schematron rules use this prefix |
+| Current version | 1.3.0 — published by FNFE-MPE (Fédération Nationale de la Facture Électronique et des Marchés Publics Électroniques) |
+| Authoritative source | FNFE-MPE GitHub repository and DGFiP External Specifications v3.1 |
+| Validation tooling | Saxon (XSLT-based); ph-schematron (open-source); FNFE-MPE online validator (no install required; accepts UBL 2.1, CII, Factur-X) |
+| Failure behaviour | Any single failing rule causes full invoice rejection — there are no partial passes |
+
+- Run Schematron locally before PA submission — building it into your ERP export pipeline as a pre-flight check eliminates preventable PA rejections
+- The FNFE-MPE online validator returns the same `BR-FR-CTC-NNN` error codes your PA will return — use it during development to confirm a fix is complete before resubmitting to the PA
+- The ~50+ rules cover: SIREN/SIRET format (9 digits, numeric only), BT-3 code list membership, VAT calculation accuracy (amount = rate × taxable base), and BT-25 presence for credit notes
+
+## Format Selection
+
+### Factur-X Profiles: Compliance Requirements
+
+| Profile | EN 16931 Compliant? | CIUS-FR Compliant? | Mandate Acceptable? |
+|---|---|---|---|
+| Minimum | No | No | No — insufficient data |
+| Basic WL | No | No | No — no line items |
+| Basic | Partial | No | No — missing mandatory fields |
+| EN 16931 | Yes | Yes (with CIUS-FR extensions) | Yes — minimum acceptable profile |
+| Extended | Yes | Yes | Yes — recommended for complex supply chains |
+
+- The minimum Factur-X profile acceptable for the French e-invoicing mandate is **EN 16931** — Minimum, Basic WL, and Basic profiles do not carry the mandatory CIUS-FR data elements and will be rejected by your PA
+- AFNOR XP Z12-012 (in force January 15, 2026) is the French standard defining the CIUS-FR mapping onto Factur-X — use this as the authoritative technical reference for Factur-X implementations, not generic Factur-X documentation
+- The Extended profile is backward-compatible with EN 16931 — any PA that accepts EN 16931 also accepts Extended; use Extended if your supply chain requires additional data elements beyond the EN 16931 baseline
 
 ## E-Reporting Data Requirements
 
