@@ -24,17 +24,20 @@ France operates a **Y-model** — invoices travel PA-to-PA directly. The PPF (Po
 ### The Y-Model — document flows
 
 ```mermaid
-graph TD
-    S["<b>B2B Supplier</b><br/>(Your ERP)"] -->|"Invoicing Data<br/>Reporting Data<br/>Payment Received"| PAe["<b>Supplier PA</b><br/>(Tungsten PAe)"]
-    PAe -- "<b>Legal Invoice</b>" --> PAr["<b>Buyer PA</b><br/>(Recipient PAr)"]
-    PAr -. "Invoice Status" .-> PAe
-    PAr -->|"Legal Invoice +<br/>Integration Data"| B["<b>B2B Buyer</b>"]
+graph TB
+    subgraph top [" "]
+        direction LR
+        S["<b>B2B Supplier</b><br/>(Your ERP)"] -->|"Invoicing Data<br/>Reporting Data<br/>Payment Info"| PAe["<b>Tungsten PAe</b><br/>(Supplier PA)"]
+        PAe ==>|"Legal Invoice"| PAr["<b>Recipient PAr</b><br/>(Buyer PA)"]
+        PAr -.->|"Invoice &<br/>Payment Status"| PAe
+        PAr -->|"Legal Invoice +<br/>Integration Data"| B["<b>B2B Buyer</b>"]
+    end
 
-    PAe -->|"Invoicing Mandatory Data<br/>+ Invoice Status"| PPF["<b>PPF</b><br/>(Public Portal / Annuaire)"]
-    PAr -->|"Reporting (Purchases)<br/>+ Invoice Status"| PPF
+    PAe -->|"Invoicing Mandatory Data<br/>+ Status"| PPF["<b>PPF</b><br/>(Public Portal / Annuaire)"]
+    PAr -->|"Reporting (Purchases)<br/>+ Status"| PPF
+    PPF --> DG["<b>DGFiP</b><br/>(Tax Authorities)"]
 
-    PPF -->|"Tax Data"| DG["<b>DGFiP</b><br/>(Tax Authorities)"]
-
+    style top fill:none,stroke:none
     style PAe fill:#0057a8,color:#fff,stroke:#003d75
     style PAr fill:#0057a8,color:#fff,stroke:#003d75
     style PPF fill:#2c3e50,color:#fff,stroke:#1a252f
