@@ -57,7 +57,8 @@ Inbound:   Sender PAe → Tungsten PAr → IvA → ERP / AP system
 
 - OIC captures SAP billing events through standard BTEs — no custom ABAP, no invasive modifications
 - IvA handles format conversion and channel routing without manual intervention
-- All 44 French use cases covered, including self-billing, down-payment sequences, and discount scenarios
+- **Multi-order / multi-delivery invoices (Use Case 1)** — a major volume driver — are handled natively: IvA preserves many-to-many links between a single invoice and multiple PO numbers, delivery notes, and shipment references in the compliant structured output
+- All 44 French use cases covered, including self-billing, down-payment sequences, discount scenarios, and complex intermediary models
 
 ## Receiving Invoices (AP / Inbound)
 
@@ -121,3 +122,51 @@ Inbound:   Sender PAe → Tungsten PAr → IvA → ERP / AP system
 
 - Tungsten strongly recommends completing full UAT before entering pilot — pilot is not a sandbox, it processes real invoices in production
 - TeN portal provides a **LIVE/TEST toggle** for UAT testing against the Sovos sandbox environment
+
+---
+
+## Down-Payment Sequences (Use Cases 20 & 21)
+
+Advance invoicing is one of the highest-volume patterns in French B2B — Tungsten supports the full sequence end-to-end.
+
+| Step | What happens | Tungsten's role |
+|------|-------------|-----------------|
+| Advance invoice issued (UC 20) | Supplier issues a down-payment invoice before goods/services are delivered; VAT may be due at this point depending on the collection regime | IvA generates a compliant structured invoice with prepayment semantics; Tungsten PAe validates and transmits PA-to-PA; CDAR 200 reported to PPF |
+| Delivery / service performed | Goods delivered or services rendered against the advance | No invoice event — advance invoice remains active in lifecycle |
+| Final invoice issued (UC 21) | Final invoice references the prior advance(s), offsets the prepaid amount, and shows the balance due | IvA links the final invoice to the original advance invoice reference(s); net amount, VAT adjustment, and prior document references are preserved in the structured output |
+| Lifecycle closes | Advance and final invoices are both tracked through to paid status | ISS tracks both documents; CDAR 212 (paid) is sent to PPF for each when payment is confirmed |
+
+- The link between advance and final invoices is maintained in the structured data — no manual reconciliation required by the buyer's AP system
+- VAT treatment control (collection-basis vs accrual-basis) is handled in the mapping layer; Tungsten does not alter the supplier's tax logic
+- Reporting avoids double-counting: the final invoice's offset against the advance prevents duplicate turnover/tax representation in Flow 1
+
+## Self-Billing, Mixed Invoices & Recurring Payments (Use Cases 19b, 31, 32)
+
+### Self-billing (Use Case 19b)
+
+- The **buyer issues the invoice on behalf of the supplier** under a contractual self-billing agreement
+- Tungsten supports customer-generated invoice flows: the self-billing flag is preserved in the structured output, and the **supplier's legal identity and VAT responsibility** remain correctly attributed even though the buyer is the issuer
+- Reporting and lifecycle statuses continue to point to the supplier as the accountable taxable party
+- Requires explicit contract-based controls and approvals — Tungsten carries the self-billing metadata through IvA to the PAe for compliant transmission
+
+### Mixed invoices (Use Case 31)
+
+- A single invoice contains a **main transaction and an ancillary transaction** — potentially with different VAT treatments on the same document
+- IvA supports **line-level tax logic**: each line or component can carry its own tax rate and legal classification while remaining part of one compliant structured invoice
+- Reporting may require different treatment by line — IvA preserves the principal/accessory classification in the structured output so downstream systems and the PA can process correctly
+
+### Monthly payments (Use Case 32)
+
+- Recurring payment arrangements where **invoice timing and payment timing are decoupled** — common in utilities, services, and subscription models
+- Tungsten handles recurring billing documents as they arrive from the ERP; each billing period generates its own compliant invoice through the standard OIC → IvA → PAe flow
+- Payment data reporting (Flow 10) correctly reflects actual collection dates, which matters when VAT is due on collection rather than invoicing
+
+## Intercompany Invoices
+
+Intercompany flows are a **major volume driver** for multi-entity organizations operating in France.
+
+- When both entities are **distinct French-established taxable persons** (separate SIREN numbers), intercompany invoices are treated as **normal domestic B2B e-invoices** — they fall squarely within the mandate's e-invoicing scope
+- Tungsten routes intercompany invoices through the same OIC → IvA → PAe → PAr path as any other domestic B2B transaction — no special handling or parallel process required
+- The entity hierarchy in OBi (head office + establishment children) ensures each legal entity is correctly registered with its own SIRET, its own Annuaire entry, and its own PA routing — even when both parties use Tungsten as their PA
+- **Cross-border intercompany flows** (where one entity is outside France) shift from e-invoicing to **e-reporting** — IvA and Sovos Scheduler handle the aggregated reporting via Flow 10 automatically
+- Solution considerations: distinguish legal entity from business unit in master data; support transfer-pricing references; ensure correct routing by entity scope rather than corporate group affiliation
