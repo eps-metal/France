@@ -12,8 +12,8 @@ status: draft
 
 - **Tungsten Automation is registered PA #0072**, officially confirmed by DGFiP — authorized to send, receive, and report e-invoices under the French mandate
 - The PA runs in a **SecNumCloud-certified environment** (EU-only access); all PA functions are surfaced through Tungsten Automation's own UI
-- **InvoiceAgility (IvA)** handles compliant e-invoice creation, format conversion, and delivery channel selection — including Peppol connectivity — so you deal with one platform, not the underlying network complexity
-- **Process Director Outbound Invoice Cockpit (OIC)**, built on Process Director, captures billing events via standard BTEs (non-invasive), enriches documents with master data, and routes them to IvA for compliant delivery
+- **InvoiceAgility** handles compliant e-invoice creation, format conversion, and delivery channel selection — including Peppol connectivity — so you deal with one platform, not the underlying network complexity
+- **Process Director Outbound Invoice Cockpit (OIC)**, built on Process Director, captures billing events via standard BTEs (non-invasive), enriches documents with master data, and routes them to InvoiceAgility for compliant delivery
 - **44 French use cases** are supported end-to-end; 7 are available today for testing, with additional use cases rolling out through 2026
 - Supported invoice formats: **Factur-X** (hybrid PDF+XML), **UBL 2.1**, and **CII** — all EN 16931 + CIUS-FR compliant
 
@@ -49,8 +49,7 @@ graph TB
 > **Legend:** Solid lines = e-invoicing (domestic B2B) and e-reporting (cross-border B2B, B2C, international purchases). Dashed lines = invoice and payment status flows. The legal invoice travels PA-to-PA directly — the PPF is never in the invoice path.
 
 - InvoiceAgility acts as **PAe** (sending PA) on your outbound flows and **PAr** (receiving PA) on your inbound flows — two distinct roles within the same certified PA infrastructure
-- **InvoiceAgility constructs the UBL payload** from your ERP source data before handing off to the PAe for validation and transmission — format conversion happens inside IvA, not at the PA layer
-- **InvoiceAgility PAe** validates against EN 16931 + CIUS-FR, queries the Annuaire for the recipient's registered PAr, and transmits PA-to-PA
+- **InvoiceAgility constructs the UBL payload** from your ERP source data before handing off to the PAe for validation and transmission — format conversion happens inside InvoiceAgility- **InvoiceAgility PAe** validates against EN 16931 + CIUS-FR, queries the Annuaire for the recipient's registered PAr, and transmits PA-to-PA
 - PA-to-PA exchange currently uses **Peppol BIS 3 UBL** over Peppol transport; non-Peppol PA-to-PA channels arrive Q3-2026
 - Lifecycle status messages flow back through the same path into the Invoice Status Service (ISS), your InvoiceAgility portal, and your SAP cockpit
 
@@ -61,15 +60,15 @@ graph TB
 | Step | Component              | What happens                                                                                                                    |
 | ---- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | 1    | **SAP**                | Billing document created; BTE fires                                                                                             |
-| 2    | **OIC**                | Captures event, enriches with master data (VAT, SIRET, payment terms), applies business rules                                   |
+| 2    | **PD OIC**             | Captures event, enriches with master data (VAT, SIRET, payment terms), applies business rules                                   |
 | 3    | **InvoiceAgility**     | Converts to compliant format (Factur-X, UBL, or CII per recipient capability), selects delivery channel                         |
 | 4    | **InvoiceAgility PAe** | Validates against EN 16931 + CIUS-FR, looks up recipient PAr in Annuaire, transmits PA-to-PA; sends CDAR 200 (delivered) to PPF |
 | 5    | **Recipient PAr**      | Receives invoice; sends CDAR 213 (technical rejection) or CDAR 210 (business refusal) if not accepted                           |
-| 6    | **OIC**                | Delivery statuses surface in your SAP cockpit via Invoice Status Service; CDAR 212 (paid) sent to PPF when you confirm payment  |
+| 6    | **PD OIC**             | Delivery statuses surface in your SAP cockpit via Invoice Status Service; CDAR 212 (paid) sent to PPF when you confirm payment  |
 
 - Process Director OIC captures SAP billing events through standard BTEs — no custom ABAP, no invasive modifications
-- IvA handles format conversion and channel routing without manual intervention
-- **Multi-order / multi-delivery invoices (Use Case 1)** — a major volume driver — are handled natively: IvA preserves many-to-many links between a single invoice and multiple PO numbers, delivery notes, and shipment references in the compliant structured output
+- InvoiceAgility handles format conversion and channel routing without manual intervention
+- **Multi-order / multi-delivery invoices (Use Case 1)** — a major volume driver — are handled natively: InvoiceAgility preserves many-to-many links between a single invoice and multiple PO numbers, delivery notes, and shipment references in the compliant structured output
 - All 44 French use cases covered, including self-billing, down-payment sequences, discount scenarios, and complex intermediary models
 
 ## Receiving Invoices (AP / Inbound)
@@ -100,7 +99,7 @@ graph TB
 | **CDAR 212** | Paid      | InvoiceAgility PAe | Payment confirmed by supplier                         |
 
 - All CDAR messages are sent to PPF automatically — no action required on your side
-- Rejection (213) and refusal (210) statuses flow back through IvA to the Invoice Status Service (ISS) and surface in your SAP cockpit
+- Rejection (213) and refusal (210) statuses flow back through InvoiceAgility to the Invoice Status Service (ISS) and surface in your SAP cockpit
 - All lifecycle messages visible in your **InvoiceAgility portal** and pushed back to your ERP/SAP cockpit via ISS
 
 ### E-reporting (data to PPF → DGFiP)
