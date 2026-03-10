@@ -11,7 +11,7 @@ status: draft
 ## The Tungsten France Stack
 
 - **Tungsten is registered PA #0072**, officially confirmed by DGFiP — authorized to send, receive, and report e-invoices under the French mandate
-- The PA runs on white-labelled **Sovos infrastructure** in a **SecNumCloud-certified environment** (EU-only access); all PA functions are surfaced through Tungsten's own UI — customers never interact with Sovos directly
+- The PA runs on white-labelled **Sovos infrastructure** in a **SecNumCloud-certified environment** (EU-only access); all PA functions are surfaced through Tungsten's own UI — you never interact with Sovos directly
 - **Invoice Agility (IvA)** combines two engines: **Tungsten e-Network (TeN)** for tax-authority network delivery and **Tungsten e-Connect (TeC)** for Peppol connectivity — IvA automatically selects the right channel per transaction
 - **SAP Outbound Invoice Cockpit (OIC)**, built on Process Director, captures billing events via standard BTEs (non-invasive), enriches documents with master data, and routes them to IvA for compliant delivery
 - **44 French use cases** are supported end-to-end; 7 are available today for Sovos testing, with additional use cases rolling out through 2026
@@ -21,30 +21,39 @@ status: draft
 
 France operates a **Y-model** — invoices travel PA-to-PA directly. The PPF (Portail Public de Facturation) is never in the invoice path; it maintains the **Annuaire** (national directory) and relays reporting data to DGFiP.
 
-### Invoice flow
+### The Y-Model — document flows
 
+```mermaid
+graph TD
+    S["<b>B2B Supplier</b><br/>(Your ERP)"] -->|"Invoicing Data<br/>Reporting Data<br/>Payment Received"| PAe["<b>Supplier PA</b><br/>(Tungsten PAe)"]
+    PAe -- "<b>Legal Invoice</b>" --> PAr["<b>Buyer PA</b><br/>(Recipient PAr)"]
+    PAr -. "Invoice Status" .-> PAe
+    PAr -->|"Legal Invoice +<br/>Integration Data"| B["<b>B2B Buyer</b>"]
+
+    PAe -->|"Invoicing Mandatory Data<br/>+ Invoice Status"| PPF["<b>PPF</b><br/>(Public Portal / Annuaire)"]
+    PAr -->|"Reporting (Purchases)<br/>+ Invoice Status"| PPF
+
+    PPF -->|"Tax Data"| DG["<b>DGFiP</b><br/>(Tax Authorities)"]
+
+    style PAe fill:#0057a8,color:#fff,stroke:#003d75
+    style PAr fill:#0057a8,color:#fff,stroke:#003d75
+    style PPF fill:#2c3e50,color:#fff,stroke:#1a252f
+    style DG fill:#2c3e50,color:#fff,stroke:#1a252f
+    style S fill:#f0f4f8,color:#333,stroke:#ccc
+    style B fill:#f0f4f8,color:#333,stroke:#ccc
 ```
-Outbound:  ERP → OIC → IvA (creates UBL) → Tungsten PAe → Recipient PAr → Recipient system
-                                                  │                              │
-                                                  ├── Annuaire lookup (routing) ─┘
-                                                  └── PPF (e-reporting / Flow 1)
-                                                            │
-                                                            └── DGFiP
 
-Inbound:   Sender PAe → Tungsten PAr → IvA → ERP / AP system
-                              │
-                              └── PPF (lifecycle status updates)
-```
+> **Legend:** Solid lines = e-invoicing (domestic B2B) and e-reporting (cross-border B2B, B2C, international purchases). Dashed lines = invoice and payment status flows. The legal invoice travels PA-to-PA directly — the PPF is never in the invoice path.
 
-- Tungsten acts as **PAe** (sending PA) on outbound flows and **PAr** (receiving PA) on inbound flows — two distinct roles within the same certified PA infrastructure
-- **IvA constructs the UBL payload** from ERP source data before handing off to the PAe for validation and transmission — format conversion happens inside IvA, not at the PA layer
+- Tungsten acts as **PAe** (sending PA) on your outbound flows and **PAr** (receiving PA) on your inbound flows — two distinct roles within the same certified PA infrastructure
+- **IvA constructs the UBL payload** from your ERP source data before handing off to the PAe for validation and transmission — format conversion happens inside IvA, not at the PA layer
 - **Tungsten PAe** validates against EN 16931 + CIUS-FR, queries the Annuaire for the recipient's registered PAr, and transmits PA-to-PA
 - PA-to-PA exchange currently uses **Peppol BIS 3 UBL** over Peppol transport; non-Peppol PA-to-PA channels arrive Q3-2026
-- Lifecycle status messages flow back through the same path into the Invoice Status Service (ISS), TeN portal, and SAP cockpit
+- Lifecycle status messages flow back through the same path into the Invoice Status Service (ISS), TeN portal, and your SAP cockpit
 
 ## Sending Invoices (AR / Outbound)
 
-### Flow: ERP → customer's recipient PA
+### Flow: your ERP → recipient PA
 
 | Step | Component | What happens |
 |------|-----------|-------------|
@@ -53,7 +62,7 @@ Inbound:   Sender PAe → Tungsten PAr → IvA → ERP / AP system
 | 3 | **IvA** | Converts to compliant format (Factur-X, UBL, or CII per recipient capability), selects delivery channel |
 | 4 | **Tungsten PAe** | Validates against EN 16931 + CIUS-FR, looks up recipient PAr in Annuaire, transmits PA-to-PA; sends CDAR 200 (delivered) to PPF |
 | 5 | **Recipient PAr** | Receives invoice; sends CDAR 213 (technical rejection) or CDAR 210 (business refusal) if not accepted |
-| 6 | **OIC** | Delivery statuses surface in SAP cockpit via Invoice Status Service; CDAR 212 (paid) sent to PPF when supplier confirms payment |
+| 6 | **OIC** | Delivery statuses surface in your SAP cockpit via Invoice Status Service; CDAR 212 (paid) sent to PPF when you confirm payment |
 
 - OIC captures SAP billing events through standard BTEs — no custom ABAP, no invasive modifications
 - IvA handles format conversion and channel routing without manual intervention
@@ -67,14 +76,14 @@ Inbound:   Sender PAe → Tungsten PAr → IvA → ERP / AP system
 | Step | Component | What happens |
 |------|-----------|-------------|
 | 1 | **Sender PAe** | Transmits invoice PA-to-PA to Tungsten PAr |
-| 2 | **Tungsten PAr** | Receives, performs technical validation; sends CDAR 213 (rejected) to PPF if validation fails |
+| 2 | **Tungsten PAr** | Receives on your behalf, performs technical validation; sends CDAR 213 (rejected) to PPF if validation fails |
 | 3 | **IvA (TeN)** | Normalizes to your target format, applies enrichment and matching rules |
-| 4 | **ERP / AP system** | Invoice lands in your workflow — ready for PO matching, coding, approval |
-| 5 | **Tungsten PAr** | Sends CDAR 210 (refused) to PPF on business refusal; CDAR 212 (paid) to PPF when payment confirmed |
+| 4 | **Your ERP / AP system** | Invoice lands in your workflow — ready for PO matching, coding, approval |
+| 5 | **Tungsten PAr** | Sends CDAR 210 (refused) to PPF on your business refusal; CDAR 212 (paid) to PPF when you confirm payment |
 
-- Inbound invoices arrive in any of the three mandate formats (Factur-X, UBL, CII) — IvA normalizes regardless of source format
-- Exception handling and matching logic run inside IvA before delivery to ERP, reducing manual touchpoints
-- PAr statuses (mandatory: received, processing, accepted; optional: refused, paid) are managed automatically by the PA and visible in TeN portal
+- Inbound invoices arrive in any of the three mandate formats (Factur-X, UBL, CII) — IvA normalizes regardless of source format, so you receive a consistent payload
+- Exception handling and matching logic run inside IvA before delivery to your ERP, reducing manual touchpoints
+- PAr statuses (mandatory: received, processing, accepted; optional: refused, paid) are managed automatically by the PA and visible in your TeN portal
 
 ## Lifecycle & E-Reporting
 
@@ -87,9 +96,9 @@ Inbound:   Sender PAe → Tungsten PAr → IvA → ERP / AP system
 | **CDAR 210** | Refused | Tungsten PAr | Business refusal by buyer (e.g., duplicate, wrong PO) |
 | **CDAR 212** | Paid | Tungsten PAe | Payment confirmed by supplier |
 
-- All CDAR messages are sent to PPF automatically — no customer action required
-- Rejection (213) and refusal (210) statuses flow back through IvA to the Invoice Status Service (ISS) and surface in the SAP cockpit
-- All lifecycle messages visible in **TeN portal** and pushed back to ERP/SAP cockpit via ISS
+- All CDAR messages are sent to PPF automatically — no action required on your side
+- Rejection (213) and refusal (210) statuses flow back through IvA to the Invoice Status Service (ISS) and surface in your SAP cockpit
+- All lifecycle messages visible in your **TeN portal** and pushed back to your ERP/SAP cockpit via ISS
 
 ### E-reporting (data to PPF → DGFiP)
 
@@ -98,7 +107,7 @@ Inbound:   Sender PAe → Tungsten PAr → IvA → ERP / AP system
 | **Flow 1** | Domestic B2B invoices | Per-invoice, not aggregated — Sovos extracts and submits automatically |
 | **Flow 10** | International B2B, B2C, and payment data | Aggregated on schedule via Sovos Scheduler |
 
-- **Flow 1** fires on every domestic invoice transaction — no customer action required
+- **Flow 1** fires on every domestic invoice transaction — no action required on your side
 - **Flow 10** covers: cross-border B2B invoices sent/received, B2C transaction data, payment data for all invoice categories
 - Payment data reporting is separate from CDAR lifecycle updates — triggered by actual payment events, not invoice status changes
 
@@ -106,22 +115,22 @@ Inbound:   Sender PAe → Tungsten PAr → IvA → ERP / AP system
 
 ### Onboarding steps
 
-- **Entity hierarchy**: set up in OBi (Tungsten's platform) with correct **SIREN/SIRET structure** before go-live — head office entity + establishment children (max 1 level deep); PS team assists with initial configuration
-- **Company registration**: each entity needs SIRET as company registration ID; SIREN embedded in VAT number (format: FR + 2 check digits + 9-digit SIREN)
-- **e-Address registration**: supported formats include EDEN, SIREN, SIRET, UPEN, UPEM, and UPF — registered in the Annuaire for inbound routing
-- **KYC (Know Your Business)**: required for PA registration under the regulatory framework; Tungsten facilitates the process
+- **Entity hierarchy**: set up in OBi (Tungsten's platform) with your correct **SIREN/SIRET structure** before go-live — head office entity + establishment children (max 1 level deep); our PS team assists with initial configuration
+- **Company registration**: each of your entities needs SIRET as company registration ID; SIREN embedded in VAT number (format: FR + 2 check digits + 9-digit SIREN)
+- **e-Address registration**: supported formats include EDEN, SIREN, SIRET, UPEN, UPEM, and UPF — registered in the Annuaire for your inbound routing
+- **KYC (Know Your Business)**: required for PA registration under the regulatory framework; Tungsten facilitates the process for you
 
 ### Timeline to go-live
 
 | Milestone | Timing | What it means |
 |-----------|--------|---------------|
 | Grand Pilot | Q1 2026 | Sovos + PA infrastructure validated |
-| UAT / Pilot | April–May 2026 | Customer testing against Sovos sandbox (TeN portal LIVE/TEST toggle); **pilot = LIVE production with real transactions** |
+| UAT / Pilot | April–May 2026 | Your testing against Sovos sandbox (TeN portal LIVE/TEST toggle); **pilot = LIVE production with real transactions** |
 | **Go-live** | **Sept 1, 2026** | All businesses must receive; GE + ETI must send |
 | Full mandate | Sept 1, 2027 | SMEs and micro-enterprises must send |
 
-- Tungsten strongly recommends completing full UAT before entering pilot — pilot is not a sandbox, it processes real invoices in production
-- TeN portal provides a **LIVE/TEST toggle** for UAT testing against the Sovos sandbox environment
+- We strongly recommend you complete full UAT before entering pilot — pilot is not a sandbox, it processes real invoices in production
+- Your TeN portal provides a **LIVE/TEST toggle** for UAT testing against the Sovos sandbox environment
 
 ---
 
@@ -136,7 +145,7 @@ Advance invoicing is one of the highest-volume patterns in French B2B — Tungst
 | Final invoice issued (UC 21) | Final invoice references the prior advance(s), offsets the prepaid amount, and shows the balance due | IvA links the final invoice to the original advance invoice reference(s); net amount, VAT adjustment, and prior document references are preserved in the structured output |
 | Lifecycle closes | Advance and final invoices are both tracked through to paid status | ISS tracks both documents; CDAR 212 (paid) is sent to PPF for each when payment is confirmed |
 
-- The link between advance and final invoices is maintained in the structured data — no manual reconciliation required by the buyer's AP system
+- The link between advance and final invoices is maintained in the structured data — no manual reconciliation required on your AP side
 - VAT treatment control (collection-basis vs accrual-basis) is handled in the mapping layer; Tungsten does not alter the supplier's tax logic
 - Reporting avoids double-counting: the final invoice's offset against the advance prevents duplicate turnover/tax representation in Flow 1
 
@@ -145,7 +154,7 @@ Advance invoicing is one of the highest-volume patterns in French B2B — Tungst
 ### Self-billing (Use Case 19b)
 
 - The **buyer issues the invoice on behalf of the supplier** under a contractual self-billing agreement
-- Tungsten supports customer-generated invoice flows: the self-billing flag is preserved in the structured output, and the **supplier's legal identity and VAT responsibility** remain correctly attributed even though the buyer is the issuer
+- Tungsten supports buyer-generated invoice flows: the self-billing flag is preserved in the structured output, and the **supplier's legal identity and VAT responsibility** remain correctly attributed even though you (as buyer) are the issuer
 - Reporting and lifecycle statuses continue to point to the supplier as the accountable taxable party
 - Requires explicit contract-based controls and approvals — Tungsten carries the self-billing metadata through IvA to the PAe for compliant transmission
 
@@ -158,7 +167,7 @@ Advance invoicing is one of the highest-volume patterns in French B2B — Tungst
 ### Monthly payments (Use Case 32)
 
 - Recurring payment arrangements where **invoice timing and payment timing are decoupled** — common in utilities, services, and subscription models
-- Tungsten handles recurring billing documents as they arrive from the ERP; each billing period generates its own compliant invoice through the standard OIC → IvA → PAe flow
+- Tungsten handles recurring billing documents as they arrive from your ERP; each billing period generates its own compliant invoice through the standard OIC → IvA → PAe flow
 - Payment data reporting (Flow 10) correctly reflects actual collection dates, which matters when VAT is due on collection rather than invoicing
 
 ## Partial Collection & Payment Reversals (Use Case 34)
@@ -173,10 +182,10 @@ Many B2B transactions — especially in services and construction — involve **
 
 ## Intercompany Invoices
 
-Intercompany flows are a **major volume driver** for multi-entity organizations operating in France.
+If you operate multiple legal entities in France, intercompany invoices are likely a **major volume driver**.
 
-- When both entities are **distinct French-established taxable persons** (separate SIREN numbers), intercompany invoices are treated as **normal domestic B2B e-invoices** — they fall squarely within the mandate's e-invoicing scope
-- Tungsten routes intercompany invoices through the same OIC → IvA → PAe → PAr path as any other domestic B2B transaction — no special handling or parallel process required
-- The entity hierarchy in OBi (head office + establishment children) ensures each legal entity is correctly registered with its own SIRET, its own Annuaire entry, and its own PA routing — even when both parties use Tungsten as their PA
-- **Cross-border intercompany flows** (where one entity is outside France) shift from e-invoicing to **e-reporting** — IvA and Sovos Scheduler handle the aggregated reporting via Flow 10 automatically
-- Solution considerations: distinguish legal entity from business unit in master data; support transfer-pricing references; ensure correct routing by entity scope rather than corporate group affiliation
+- When both of your entities are **distinct French-established taxable persons** (separate SIREN numbers), intercompany invoices are treated as **normal domestic B2B e-invoices** — they fall squarely within the mandate's e-invoicing scope
+- Tungsten routes your intercompany invoices through the same OIC → IvA → PAe → PAr path as any other domestic B2B transaction — no special handling or parallel process required
+- Your entity hierarchy in OBi (head office + establishment children) ensures each legal entity is correctly registered with its own SIRET, its own Annuaire entry, and its own PA routing — even when both parties use Tungsten as their PA
+- **Cross-border intercompany flows** (where one of your entities is outside France) shift from e-invoicing to **e-reporting** — IvA and Sovos Scheduler handle the aggregated reporting via Flow 10 automatically
+- Key consideration for your setup: distinguish legal entity from business unit in master data; support transfer-pricing references; ensure correct routing by entity scope rather than corporate group affiliation
