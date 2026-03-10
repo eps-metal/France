@@ -11,8 +11,8 @@ status: draft
 ## The InvoiceAgility France Stack
 
 - **Tungsten Automation is registered PA #0072**, officially confirmed by DGFiP — authorized to send, receive, and report e-invoices under the French mandate
-- The PA runs in a **SecNumCloud-certified environment** (EU-only access); all PA functions are surfaced through Tungsten Automations' own UI 
-- **InvoiceAgility (IvA)**  offers Peppol connectivity — IvA automatically selects the right channel per transaction
+- The PA runs in a **SecNumCloud-certified environment** (EU-only access); all PA functions are surfaced through Tungsten Automation's own UI
+- **InvoiceAgility (IvA)** handles compliant e-invoice creation, format conversion, and delivery channel selection — including Peppol connectivity — so you deal with one platform, not the underlying network complexity
 - **Process Director Outbound Invoice Cockpit (OIC)**, built on Process Director, captures billing events via standard BTEs (non-invasive), enriches documents with master data, and routes them to IvA for compliant delivery
 - **44 French use cases** are supported end-to-end; 7 are available today for testing, with additional use cases rolling out through 2026
 - Supported invoice formats: **Factur-X** (hybrid PDF+XML), **UBL 2.1**, and **CII** — all EN 16931 + CIUS-FR compliant
@@ -27,7 +27,7 @@ France operates a **Y-model** — invoices travel PA-to-PA directly. The PPF (Po
 graph TB
     subgraph top [" "]
         direction LR
-        S["<b>B2B Supplier</b><br/>(Your ERP)"] -->|"Invoicing Data<br/>Reporting Data<br/>Payment Info"| PAe["<b>Tungsten PAe</b><br/>(Supplier PA)"]
+        S["<b>B2B Supplier</b><br/>(Your ERP)"] -->|"Invoicing Data<br/>Reporting Data<br/>Payment Info"| PAe["<b>InvoiceAgility PAe</b><br/>(Supplier PA)"]
         PAe ==>|"Legal Invoice"| PAr["<b>Recipient PAr</b><br/>(Buyer PA)"]
         PAr -.->|"Invoice &<br/>Payment Status"| PAe
         PAr -->|"Legal Invoice +<br/>Integration Data"| B["<b>B2B Buyer</b>"]
@@ -52,7 +52,7 @@ graph TB
 - **InvoiceAgility constructs the UBL payload** from your ERP source data before handing off to the PAe for validation and transmission — format conversion happens inside IvA, not at the PA layer
 - **InvoiceAgility PAe** validates against EN 16931 + CIUS-FR, queries the Annuaire for the recipient's registered PAr, and transmits PA-to-PA
 - PA-to-PA exchange currently uses **Peppol BIS 3 UBL** over Peppol transport; non-Peppol PA-to-PA channels arrive Q3-2026
-- Lifecycle status messages flow back through the same path into the Invoice Status Service (ISS), TeN portal, and your SAP cockpit
+- Lifecycle status messages flow back through the same path into the Invoice Status Service (ISS), your InvoiceAgility portal, and your SAP cockpit
 
 ## Sending Invoices (AR / Outbound)
 
@@ -78,7 +78,7 @@ graph TB
 
 | Step | Component                | What happens                                                                                                 |
 | ---- | ------------------------ | ------------------------------------------------------------------------------------------------------------ |
-| 1    | **Sender PAe**           | Transmits invoice PA-to-PA to Tungsten PAr                                                                   |
+| 1    | **Sender PAe**           | Transmits invoice PA-to-PA to InvoiceAgility PAr                                                             |
 | 2    | **InvoiceAgility PAr**   | Receives on your behalf, performs technical validation; sends CDAR 213 (rejected) to PPF if validation fails |
 | 3    | **InvoiceAgility**       | Normalizes to your target format, applies enrichment and matching rules                                      |
 | 4    | **Your ERP / AP system** | Invoice lands in your workflow — ready for PO matching, coding, approval                                     |
@@ -107,8 +107,8 @@ graph TB
 
 | Flow | Scope | Method |
 |------|-------|--------|
-| **Flow 1** | Domestic B2B invoices | Per-invoice, not aggregated — Sovos extracts and submits automatically |
-| **Flow 10** | International B2B, B2C, and payment data | Aggregated on schedule via Sovos Scheduler |
+| **Flow 1** | Domestic B2B invoices | Per-invoice, not aggregated — InvoiceAgility extracts and submits automatically |
+| **Flow 10** | International B2B, B2C, and payment data | Aggregated on schedule by InvoiceAgility |
 
 - **Flow 1** fires on every domestic invoice transaction — no action required on your side
 - **Flow 10** covers: cross-border B2B invoices sent/received, B2C transaction data, payment data for all invoice categories
@@ -141,7 +141,7 @@ graph TB
 
 Advance invoicing is one of the highest-volume patterns in French B2B — InvoiceAgility supports the full sequence end-to-end.
 
-| Step                           | What happens                                                                                                                                | Tungsten's role                                                                                                                                                                       |
+| Step                           | What happens                                                                                                                                | How InvoiceAgility handles it                                                                                                                                                                       |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Advance invoice issued (UC 20) | Supplier issues a down-payment invoice before goods/services are delivered; VAT may be due at this point depending on the collection regime | InvoiceAgility generates a compliant structured invoice with prepayment semantics; InvoiceAgility PAe validates and transmits PA-to-PA; CDAR 200 reported to PPF                      |
 | Delivery / service performed   | Goods delivered or services rendered against the advance                                                                                    | No invoice event — advance invoice remains active in lifecycle                                                                                                                        |
@@ -149,7 +149,7 @@ Advance invoicing is one of the highest-volume patterns in French B2B — Invoic
 | Lifecycle closes               | Advance and final invoices are both tracked through to paid status                                                                          | ISS tracks both documents; CDAR 212 (paid) is sent to PPF for each when payment is confirmed                                                                                          |
 
 - The link between advance and final invoices is maintained in the structured data — no manual reconciliation required on your AP side
-- VAT treatment control (collection-basis vs accrual-basis) is handled in the mapping layer; Tungsten does not alter the supplier's tax logic
+- VAT treatment control (collection-basis vs accrual-basis) is handled in the mapping layer; InvoiceAgility does not alter your tax logic
 - Reporting avoids double-counting: the final invoice's offset against the advance prevents duplicate turnover/tax representation
 
 ## Self-Billing, Mixed Invoices & Recurring Payments 
@@ -157,9 +157,9 @@ Advance invoicing is one of the highest-volume patterns in French B2B — Invoic
 ### Self-billing 
 
 - The **buyer issues the invoice on behalf of the supplier** under a contractual self-billing agreement
-- Tungsten supports buyer-generated invoice flows: the self-billing flag is preserved in the structured output, and the **supplier's legal identity and VAT responsibility** remain correctly attributed even though you (as buyer) are the issuer
+- InvoiceAgility supports buyer-generated invoice flows: the self-billing flag is preserved in the structured output, and the **supplier's legal identity and VAT responsibility** remain correctly attributed even though you (as buyer) are the issuer
 - Reporting and lifecycle statuses continue to point to the supplier as the accountable taxable party
-- Requires explicit contract-based controls and approvals — Tungsten carries the self-billing metadata through InvoiceAgility to the PAe for compliant transmission
+- Requires explicit contract-based controls and approvals — InvoiceAgility carries the self-billing metadata through to the PAe for compliant transmission
 
 ### Mixed invoices 
 
@@ -170,8 +170,8 @@ Advance invoicing is one of the highest-volume patterns in French B2B — Invoic
 ### Monthly payments 
 
 - Recurring payment arrangements where **invoice timing and payment timing are decoupled** — common in utilities, services, and subscription models
-- Tungsten handles recurring billing documents as they arrive from your ERP; each billing period generates its own compliant invoice through the standard Process Director OIC → InvoiceAgility → PAe flow
-- Payment data reporting (Flow 10) correctly reflects actual collection dates, which matters when VAT is due on collection rather than invoicing
+- InvoiceAgility handles recurring billing documents as they arrive from your ERP; each billing period generates its own compliant invoice through the standard Process Director OIC → InvoiceAgility → PAe flow
+- Payment data reporting correctly reflects actual collection dates, which matters when VAT is due on collection rather than invoicing
 
 ## Partial Collection & Payment Reversals 
 
@@ -179,7 +179,7 @@ Many B2B transactions — especially in services and construction — involve **
 
 - InvoiceAgility's Invoice Status Service (ISS) supports an **event-based payment status model**: each partial payment is recorded as a distinct collection event against the invoice, with its own date, amount, and method
 - When a prior collection is reversed or cancelled, ISS records the reversal as a separate event — the audit trail is preserved, not overwritten
-- **Payment data reporting (Flow 10)** reflects the actual collection history: partial amounts, reversal events, and the net collected position are all transmitted to PPF on the aggregated reporting cycle
+- **Payment data reporting** reflects the actual collection history: partial amounts, reversal events, and the net collected position are all transmitted to PPF on the aggregated reporting cycle
 - This matters most when **VAT is due on collection** (cash-accounting regime) — DGFiP needs accurate payment event data, not just a final paid/unpaid flag
 - CDAR 212 (paid) is sent to PPF only when the invoice reaches full settlement; partial collections and reversals are captured in the payment data reporting stream, not in the lifecycle status messages
 
@@ -188,7 +188,7 @@ Many B2B transactions — especially in services and construction — involve **
 If you operate multiple legal entities in France, intercompany invoices are likely a **major volume driver**.
 
 - When both of your entities are **distinct French-established taxable persons** (separate SIREN numbers), intercompany invoices are treated as **normal domestic B2B e-invoices** — they fall squarely within the mandate's e-invoicing scope
-- Tungsten routes your intercompany invoices through the same Process Director OIC → InvoiceAgility → PAe → PAr path as any other domestic B2B transaction — no special handling or parallel process required
+- InvoiceAgility routes your intercompany invoices through the same Process Director OIC → InvoiceAgility → PAe → PAr path as any other domestic B2B transaction — no special handling or parallel process required
 - Your entity hierarchy in InvoiceAgility (head office + establishment children) ensures each legal entity is correctly registered with its own SIRET, its own Annuaire entry, and its own PA routing — even when both parties use InvoiceAgility as their PA
 - **Cross-border intercompany flows** (where one of your entities is outside France) shift from e-invoicing to **e-reporting** — InvoiceAgility handles the aggregated reporting  automatically
 - Key consideration for your setup: distinguish legal entity from business unit in master data; support transfer-pricing references; ensure correct routing by entity scope rather than corporate group affiliation
