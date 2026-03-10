@@ -161,6 +161,16 @@ Advance invoicing is one of the highest-volume patterns in French B2B — Tungst
 - Tungsten handles recurring billing documents as they arrive from the ERP; each billing period generates its own compliant invoice through the standard OIC → IvA → PAe flow
 - Payment data reporting (Flow 10) correctly reflects actual collection dates, which matters when VAT is due on collection rather than invoicing
 
+## Partial Collection & Payment Reversals (Use Case 34)
+
+Many B2B transactions — especially in services and construction — involve **multiple partial payments against a single invoice**, and sometimes **reversal or cancellation of a prior collection**. This use case is directly tied to payment data reporting obligations.
+
+- Tungsten's Invoice Status Service (ISS) supports an **event-based payment status model**: each partial payment is recorded as a distinct collection event against the invoice, with its own date, amount, and method
+- When a prior collection is reversed or cancelled, ISS records the reversal as a separate event — the audit trail is preserved, not overwritten
+- **Payment data reporting (Flow 10)** reflects the actual collection history: partial amounts, reversal events, and the net collected position are all transmitted to PPF via Sovos Scheduler on the aggregated reporting cycle
+- This matters most when **VAT is due on collection** (cash-accounting regime) — DGFiP needs accurate payment event data, not just a final paid/unpaid flag
+- CDAR 212 (paid) is sent to PPF only when the invoice reaches full settlement; partial collections and reversals are captured in the payment data reporting stream, not in the lifecycle status messages
+
 ## Intercompany Invoices
 
 Intercompany flows are a **major volume driver** for multi-entity organizations operating in France.
