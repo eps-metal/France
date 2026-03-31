@@ -124,6 +124,24 @@
 
 - Payment data must be reported within the period defined in DGFiP implementation orders; timing windows are subject to implementing decree — verify the current schedule with your PA and legal counsel before go-live
 
+### E-Reporting Flow Type Codes
+
+| Flow | Scope | Aggregation |
+|------|-------|-------------|
+| 1 | Domestic B2B invoice data | Per-invoice, automatic — PA extracts during transmission |
+| 8 | Domestic B2B invoice data relay (PA → PPF) | Automatic, extracted during transmission |
+| 9 | Domestic B2B lifecycle/status data relay (PA → PPF) | Automatic, per status change |
+| 10 | Non-domestic and supplementary reporting | Aggregated on schedule by PA |
+| 10.1 | International B2B + B2C invoicing data not in flows 8/9 | Aggregated on schedule |
+| 10.2 | Payment data for all invoice flows (8/9/10.1) | Aggregated, triggered by ERP payment events |
+| 10.3 | B2C transaction data (no invoice issued) | Aggregated on schedule |
+| 10.4 | B2C transaction payment data (invoiceless) | Aggregated on schedule |
+
+- Flow 1 fires as an async side-effect of every domestic B2B invoice transmission — zero supplier effort required
+- Flows 8 and 9 are PA-to-PPF relay flows — your PA handles these transparently; they are not sender-initiated
+- Flow 10 is the umbrella for all non-domestic reporting; sub-flows 10.1–10.4 are scheduled by your PA
+- "No action on your side" is true for the reporting mechanism itself; ERP data feeds for cross-border, B2C, and payment events must still be configured upfront
+
 ### E-Reporting Submission Mechanics
 
 | Reporting Stream | Trigger | Submission Frequency |
@@ -137,6 +155,22 @@
 - B2C and cross-border B2B e-reporting require your billing or POS system to push transaction data to your PA — this integration must be configured and tested separately from the invoice transmission integration
 - Submission uses the same PA API or EDI channel as invoice submission; your PA documentation defines the specific endpoint and payload schema for e-reporting data
 - Verify the current reporting window schedule with your PA and legal counsel before go-live — DGFiP implementing decrees govern the exact timing and the schedule may be updated
+
+## CDAR Message Codes
+
+### CDAR: Invoice Lifecycle Message Codes
+
+| Code | Status | Meaning | Direction |
+|------|--------|---------|-----------|
+| 200 | Delivered | Invoice successfully transmitted to recipient PAr | PAe → PPF |
+| 210 | Refused | Business refusal by buyer (e.g., duplicate, wrong PO) | PAr → PPF |
+| 212 | Paid | Payment confirmed by supplier; full settlement reported to DGFiP | PAe → PPF |
+| 213 | Rejected | Technical validation failure at receiving PA | PAr → PPF |
+
+- CDAR codes are the machine-readable status messages exchanged between PAs and relayed to DGFiP via PPF
+- Code 200 (Delivered) fires automatically on successful PA-to-PA transmission — no action required from the sender
+- Code 212 (Paid) is separate from the CDAR lifecycle — it is triggered by a payment event in the sender's ERP/treasury system, not by invoice acceptance
+- Codes 210 and 213 both indicate failure but at different levels: 213 is a technical validation failure (format/schema); 210 is a business-level refusal by the buyer after the invoice was technically accepted
 
 ## Legal Framework
 
@@ -156,6 +190,153 @@
 | Inaccurate e-reporting | €15 per invoice | €15,000/year |
 
 - Penalties above are per PLF 2026 provisions (adopted February 2, 2026) — amounts are subject to implementing decree and may be adjusted; verify the current penalty schedule before finalizing your compliance planning
+
+## Use Cases: Outbound Scenarios
+
+### UC 0 — Standard B2B Invoice (Baseline)
+
+- **Volume share:** 40–55% — the most common invoice type by far
+- Single order, single delivery, direct buyer-to-seller payment, no third parties, no special VAT regime, no advance payments
+- The default against which all other use cases are defined as deviations
+- BT-3 code: 380 (commercial invoice)
+- Standard lifecycle: Déposée → Reçue → Approuvée → Encaissée
+- CDAR: 200 on delivery; 212 on payment
+- E-reporting: Flow 1 (automatic, per-invoice)
+- **This must work flawlessly before addressing any other use case**
+
+### UC 1 — Multi-Order / Multi-Delivery
+
+- **Volume share:** 25–35%
+- One invoice covers several POs and/or several deliveries
+- Invoice content must support many-to-many links between invoice, orders, and deliveries while preserving document traceability
+- Transmission path is identical to UC 0; the complexity is in the ERP data extraction and reference fields
+- E-reporting: Flow 1 (standard domestic B2B)
+
+### Intercompany Invoices
+
+- **Volume share:** 15–25%
+- Invoices between separate legal entities within the same corporate group
+- If both entities are distinct French-established taxable persons with separate SIRETs, treated as normal domestic B2B e-invoicing — no shortcut
+- Each legal entity's SIRET must be individually registered in the Annuaire
+- Same PD OIC → InvoiceAgility → PAe flow; InvoiceAgility routes based on legal entity SIRET, not business unit
+- Cross-border intercompany (one entity outside France) shifts to e-reporting (Flow 10.1) rather than domestic e-invoicing
+- Key setup: distinguish legal entity from business unit in master data
+
+### UC 34 — Partial Collection & Payment Reversals
+
+- **Volume share:** 8–15%
+- Tracking partial payments and reversal/cancellation of payments
+- Event-based payment model: each partial payment is a distinct collection event with its own date, amount, and method
+- Reversals preserved — cancellation of a prior collection is recorded as a separate event, not an override
+- Payment data reporting (Flow 10.2) reflects actual collection history: partials, reversals, and net collected position
+- CDAR 212 (paid) sent only at full settlement — not on partial payments
+- Matters most when VAT is due on collection (TVA sur encaissements) — default for the entire service economy
+
+### UC 20 — Advance Payment (Down-Payment) Invoice
+
+- **Volume share:** 5–10%
+- An advance/deposit invoice is issued before the final invoice
+- Must be a compliant structured invoice with its own BT-1 and lifecycle
+- VAT may be due at the advance stage depending on the nature of the supply
+- E-reporting: Flow 1 per advance invoice; payment data (Flow 10.2) per advance collection
+
+### UC 21 — Final Invoice After Advance Payment
+
+- **Volume share:** 5–10%
+- Final invoice settles or offsets one or more prior advance invoices
+- Must reference prior advance invoice(s) and show the balance due after offset
+- Reporting must avoid duplicate turnover/tax representation — the advance VAT was already reported
+- Key: offset mechanics and references to prior advances in the structured XML
+
+### UC 2 — Invoice Already Paid by Buyer
+
+- **Volume share:** 3–6%
+- Invoice issued after the buyer has already paid at time of issuance
+- Must be issued in compliant structured format with a workflow representing an already-paid state
+- May require payment status transmission or lifecycle status showing invoice is settled at issuance
+- CDAR 212 timing: payment event may precede or coincide with invoice transmission
+
+### UC 31 — Mixed Invoice
+
+- **Volume share:** 3–6%
+- One invoice contains a main (principal) transaction and an ancillary (accessory) transaction
+- VAT category of the main operation governs the accessory operations
+- Complexity is in the payload: line-level tax logic must correctly classify principal vs. accessory
+- Transmission path is standard; the challenge is ERP data extraction and InvoiceAgility mapping
+
+### UC 32 — Monthly Payments / Recurring Billing
+
+- **Volume share:** 5–10%
+- Recurring billing arrangements (energy, telecom, SaaS, leasing, maintenance)
+- Each billing period generates its own compliant invoice through the standard flow
+- Invoice timing and payment timing may be decoupled; estimated payments may generate e-reporting until annual reconciliation invoice
+- Payment data reporting (Flow 10.2) reflects actual collection dates — matters when VAT is due on collection
+
+### UC 19b — Self-Billing
+
+- **Volume share:** 2–5%
+- The buyer issues the invoice on behalf of the supplier
+- BT-3 code: 389 (only acceptable code for self-billing)
+- SIREN/SIRET positions are reversed: buyer's identifiers in seller fields
+- The invoice is delivered to the supplier via their PAr — they receive it and respond with acceptance or rejection
+- InvoiceAgility correctly attributes the supplier's legal identity and VAT responsibility, and flags it as self-billed in the XML payload
+- Self-billing agreement must be legally in place before transmission
+
+### UC 22a — Early Payment Discount (Cash Accounting VAT)
+
+- **Volume share:** 1–2%
+- Early payment discount applied to services where VAT is due on collection (TVA sur encaissements)
+- Invoice logic must handle discount effects in a cash-accounting VAT context
+- Payment and collection dates become important for VAT reporting
+- Configurable discount logic tied to VAT exigibility at collection
+
+### UC 22b — Early Payment Discount (Accrual/Debit-Basis VAT)
+
+- **Volume share:** 1–3%
+- Early payment discount applied to goods, or services under accrual VAT / debits option
+- VAT timing differs from cash-accounting cases — discount reduces the taxable base at invoice time
+- Payment reporting less central than in cash-accounting scenarios, but reconciliation remains important
+- Tax engine must distinguish cash vs. accrual VAT treatment
+
+### Other Outbound Use Cases
+
+| UC | Name | Volume | Key Difference from UC 0 |
+|---|---|---|---|
+| 38 | Sub-lines and line grouping | 10–20% | Hierarchical line structure (GROUP/DETAIL/INFORMATION types) |
+| 3 | Third-party payer known at invoicing | 8–12% | Must identify paying third party in addition to buyer |
+| 8 | Invoice payable to designated third party | 8–12% | Beneficiary differs from supplier (e.g., factor) |
+| 5 | Employee-paid expenses with invoice | 5–8% | Invoice in company's name but reimbursement flow |
+| 11 | Invoice sent to third party on behalf of buyer | 5–8% | Routing recipient differs from legal buyer |
+| 10 | Beneficiary unknown at creation | 3–5% | Payee details added later; lifecycle updates |
+| 36 | Professional secrecy / sensitive data | 2–5% | Generic descriptions in Flow 1; detail only in invoice |
+| 7 | Lodge card / purchasing card | 2–4% | Payment instrument differs from normal AP |
+| 12 | Transparent intermediary (buyer side) | 2–4% | Intermediary processes without replacing buyer |
+| 4 | Partially covered by third party | 1–3% | Split-payment responsibility |
+| 9 | Third party managing order/reception/invoicing | 1–3% | Complex supply chain role mapping |
+| 13 | Subcontracting with direct payment | 1–3% | Direct payment and delegation roles |
+| 17a | Payment intermediary | 1–3% | Marketplace/platform model |
+| 40 | Netting / offsetting | 1–3% | Settlement by offset; two separate invoices required |
+| 15 | Third party orders/pays on behalf of buyer | 1–2% | Ordering party differs from buyer |
+| 19a | Invoice under billing mandate | 1–2% | Third party issues invoice on supplier's behalf |
+| 26 | Contractual reservation clause | 1–2% | 5% retention withheld; split payment lifecycle |
+| 39 | Multi-seller | 0.5–2% | Multiple sellers grouped on one invoice |
+| 17b | Payment intermediary + billing mandate | 0.5–1.5% | Combined marketplace + mandated invoicing |
+| 25 | Vouchers and gift cards | 0.5–1.5% | BUU (single-purpose) in scope; BUM (multi-purpose) out of scope |
+| 33 | Margin VAT scheme | 0.5–1.5% | VAT amount NOT shown separately |
+| 30 | VAT already collected | 0.5–1% | Must avoid double reporting |
+| 28 | Restaurant receipts | 0.3–0.8% | B2B only if >€150 HT or buyer requests invoice |
+| 27 | Toll tickets | 0.2–0.5% | Corporate fleet = B2B; cash/card = B2C e-reporting |
+| 14 | B2B co-contracting | <0.5% | Multiple contractors on same arrangement |
+| 16 | Disbursements | <0.5% | Reimbursement, not resale |
+| 18 | Debit note | <0.5% | True debit notes excluded from scope; only VAT invoices in scope |
+| 29 | VAT group (assujetti unique) | Volume reducer | Intra-group = out of scope; external uses shared SIREN |
+| 23 | Self-billing (individual + professional) | <0.1% | Non-standard party setup |
+| 37 | Unincorporated joint venture (SEP) | <0.1% | No SIREN; members invoice individually |
+| 42 | Tax refund / duty-free | <0.1% | B2B = corrective invoicing only |
+| 35 | Author's statements | <0.05% | Non-standard document type |
+| 41 | Barter | <0.05% | Two invoices required; VAT due immediately |
+| 6 | Employee expenses without invoice | ~0% | Out of scope (no formal invoice) |
+| 24 | Earnest money (arrhes) | ~0% | Out of scope (not consideration for supply) |
 
 ## Peppol for Outbound
 

@@ -57,6 +57,20 @@
 - **Refusal path**: Déposée → Reçue → Refusée — invoice is technically valid and legally exists, but the recipient raises a business-level dispute; requires resolution between buyer and seller outside the PA flow
 - **En Anomalie path**: Déposée → Reçue → En Anomalie → (clarification exchanged) → Approuvée — recipient raises a query rather than an outright refusal; invoice remains live while the issue is resolved
 
+### CDAR Message Codes
+
+| Code | Status | Meaning | Direction |
+|------|--------|---------|-----------|
+| 200 | Delivered | Invoice successfully transmitted to recipient PAr | PAe → PPF |
+| 210 | Refused | Business refusal by buyer (e.g., duplicate, wrong PO) | PAr → PPF |
+| 212 | Paid | Payment confirmed; full settlement reported to DGFiP | PAe → PPF |
+| 213 | Rejected | Technical validation failure at receiving PA | PAr → PPF |
+
+- CDAR codes are the machine-readable status messages exchanged between PAs and relayed to DGFiP via PPF — they are the transport-level encoding of the lifecycle statuses described above
+- As a receiver, codes 210 and 213 are the ones you or your system trigger: 213 when your PA rejects an invoice technically; 210 when you raise a business refusal
+- Code 200 fires automatically when your PA accepts delivery — no action required from you
+- Code 212 is triggered by a payment event — typically from your AP/treasury system signaling to your PA that payment has been made
+
 ### Status Lifecycle: Timing and SLA Expectations
 
 | Transition | Indicative Timing | Governed by SLA? |
@@ -238,6 +252,115 @@
 - Reporting is periodic, not real-time — DGFiP implementing decrees define the reporting window; typical alignment is with VAT return periods (monthly or quarterly depending on your VAT regime)
 - Submission uses the same PA API or EDI channel as invoice status updates — your PA documentation defines the specific endpoint and payload schema for payment event data
 - The obligation is active from your mandatory receipt date (September 1, 2026) — payment reporting is not deferred to your sending deadline
+
+### E-Reporting Flow Type Codes (Receiver Perspective)
+
+| Flow | Scope | Your Role as Receiver |
+|------|-------|-----------------------|
+| 1 | Domestic B2B invoice data | Sender's obligation — automatic during their transmission |
+| 8 | Domestic B2B invoice data relay (PA → PPF) | Automatic — your PA relays on receipt |
+| 9 | Domestic B2B lifecycle/status data relay (PA → PPF) | Automatic — your PA relays your status responses |
+| 10.2 | Payment data for all invoice flows | **Your obligation** — triggered when you pay a received invoice |
+
+- As a receiver of domestic B2B invoices, Flow 10.2 is your primary e-reporting obligation — you must report payment events for invoices you receive
+- Flows 1, 8, and 9 are handled by the sender's PA or automatically by the PA infrastructure — no action required from you
+- Flow 10.2 data: invoice reference, payment date, amount paid, payment method — submitted via your PA when your ERP/treasury system confirms payment
+
+## Use Cases: Inbound Scenarios
+
+### UC 0 — Receiving a Standard B2B Invoice (Baseline)
+
+- **Volume share:** 40–55%
+- Single order, single delivery, direct payment from you to the supplier
+- Standard inbound lifecycle: Reçue → Approuvée → Encaissée
+- Your AP system matches to PO, validates, posts, and triggers payment
+- CDAR: your PA fires 200 on receipt; you trigger approval; your system triggers 212 on payment
+- E-reporting: Flow 10.2 when you pay
+- **This must work flawlessly before addressing any other use case**
+
+### UC 1 — Receiving a Multi-Order / Multi-Delivery Invoice
+
+- **Volume share:** 25–35%
+- Invoice references multiple POs and/or deliveries from the same supplier
+- AP matching complexity: your system must match one invoice against multiple PO/GR combinations
+- No special e-reporting treatment; standard Flow 10.2 on payment
+
+### Receiving Intercompany Invoices
+
+- **Volume share:** 15–25%
+- Invoice from a sister entity within the same group — treated as normal domestic B2B if both are French-established
+- Each legal entity's SIRET is independently registered in the Annuaire
+- Your PA routes by SIRET, not by group affiliation — each entity's AP system processes independently
+- Cross-border intercompany from a non-French entity arrives as a standard inbound (if via Peppol) or outside e-invoicing scope entirely
+
+### UC 34 — Receiving Invoices with Partial Collection
+
+- **Volume share:** 8–15%
+- You make partial payments over time; each is a distinct collection event
+- Your AP/treasury system must report each partial payment to your PA (Flow 10.2) individually
+- Reversals: if a prior payment is cancelled, report the reversal as a separate event — do not overwrite
+- CDAR 212 sent only at full settlement
+- Critical for services where VAT is due on collection
+
+### UC 20/21 — Down-Payment and Final Invoice Sequences
+
+- **Volume share:** 5–10% each
+- UC 20: you receive an advance invoice — process and pay it; report via Flow 10.2
+- UC 21: you receive the final invoice offsetting prior advances — your AP must reconcile the advance(s) against the final balance
+- Avoid double-posting the VAT already reported on the advance invoice
+
+### UC 2 — Receiving an Already-Paid Invoice
+
+- **Volume share:** 3–6%
+- Invoice arrives after you've already paid (e.g., prepaid orders)
+- Your AP system must recognize the already-paid state and reconcile without re-triggering payment
+- Payment data (Flow 10.2) timing: payment event may have occurred before the invoice was received
+
+### UC 31 — Receiving a Mixed Invoice
+
+- **Volume share:** 3–6%
+- Invoice contains principal and accessory operations with different tax treatments
+- Your AP system must handle line-level VAT correctly — the main operation's VAT category governs accessories
+- Standard receipt flow; complexity is in the posting and tax recovery logic
+
+### UC 32 — Monthly/Recurring Invoices
+
+- **Volume share:** 5–10%
+- Recurring invoices (energy, telecom, SaaS, leasing)
+- Each period's invoice is a separate document in the PA network
+- Payment data reporting per actual collection date — critical for VAT on collection scenarios
+
+### UC 19b — Receiving a Self-Billed Invoice
+
+- **Volume share:** 2–5%
+- In this scenario, YOU (the buyer) issued the invoice on behalf of the supplier — but the supplier receives it via their PAr
+- If you are the supplier in a self-billing arrangement: the invoice arrives at your PAr with BT-3 = 389
+- Your AP system must recognize the reversed SIREN/SIRET positions and process accordingly
+- You can accept or reject it via standard lifecycle statuses
+
+### UC 22a / 22b — Receiving Discounted Invoices
+
+- **Volume share:** 1–3% combined
+- UC 22a: early payment discount on services with VAT due on collection — discount affects VAT timing
+- UC 22b: early payment discount on goods/accrual VAT — discount reduces taxable base at invoice time
+- Your AP system must apply the correct discount and VAT treatment based on the invoice terms
+
+### Other Inbound Use Cases
+
+| UC | Name | Volume | Key Receiver Consideration |
+|---|---|---|---|
+| 38 | Sub-lines and line grouping | 10–20% | AP system must parse hierarchical line structures |
+| 3 | Third-party payer identified | 8–12% | You may not be the payer despite being the buyer |
+| 8 | Payable to designated third party | 8–12% | Payment goes to factor/treasury center, not supplier |
+| 5 | Employee expenses with invoice | 5–8% | Invoice in company name; reimbursement is internal |
+| 11 | Invoice sent to third party for buyer | 5–8% | You may receive via a third-party processor |
+| 10 | Beneficiary unknown | 3–5% | Payee details may arrive later via lifecycle update |
+| 36 | Professional secrecy | 2–5% | Sensitive data handling required |
+| 7 | Lodge/purchasing card payment | 2–4% | Reconcile against card statements |
+| 12 | Transparent intermediary | 2–4% | Intermediary processes on your behalf |
+| 26 | Contractual reservation | 1–2% | 5% retention; split payment lifecycle |
+| 33 | Margin VAT scheme | 0.5–1.5% | No VAT shown; cannot recover VAT |
+| 29 | VAT group | Volume reducer | Intra-group out of scope |
 
 ## From Spec to Product
 

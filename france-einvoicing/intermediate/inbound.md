@@ -61,6 +61,17 @@ The "Y" shape: two legs — the sender's PA and the recipient's PA — converge 
 | Refused | Recipient disputes the invoice on business grounds | Recipient (via your PA) |
 | Paid | Payment event reported to DGFiP | Recipient (via your PA) |
 
+These statuses are communicated between PAs using **CDAR message codes** — machine-readable identifiers that encode each status transition:
+
+| CDAR Code | Maps To | Meaning |
+|-----------|---------|---------|
+| 200 | Received/Delivered | Invoice transmitted to recipient PA |
+| 210 | Refused | Business refusal by buyer |
+| 212 | Paid | Payment confirmed, reported to DGFiP |
+| 213 | Rejected | Technical validation failure |
+
+- The advanced level covers CDAR codes in full technical detail; at this level, know that they exist and map to the statuses above
+
 ## Formats You Will Receive
 
 ### Factur-X, UBL 2.1, and CII — What Are They?

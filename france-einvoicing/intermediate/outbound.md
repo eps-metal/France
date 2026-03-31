@@ -50,6 +50,7 @@
 
 - When you send a domestic B2B e-invoice via your PA, the required e-reporting data is extracted and relayed to DGFiP automatically as part of the transmission process
 - No separate e-reporting action is required from you for domestic B2B — the PA handles it
+- This is **Flow 1** in DGFiP terminology — per-invoice, automatic, zero effort from you
 
 ### B2C Transactions: What You Must Report
 
@@ -57,6 +58,7 @@
 - Instead, your PA submits transaction data to DGFiP: sale date, total amount, and VAT breakdown by rate
 - This obligation covers all B2C sales regardless of amount or channel (there is no minimum threshold for B2C reporting under the French mandate)
 - Your PA handles submission, but must be configured to receive the transaction data from your billing or POS system — this integration is your responsibility to set up
+- This is **Flow 10.3** in DGFiP terminology — aggregated on schedule, not per-transaction
 
 ### Cross-Border B2B: What You Must Report
 
@@ -64,6 +66,7 @@
 - Your PA still submits transaction data to DGFiP for those sales, covering your French VAT obligations
 - Required fields: seller SIREN, invoice date, amounts, VAT breakdown by rate — plus a **buyer country code** (not present in B2C reporting; replaces the buyer SIREN since foreign entities have no SIREN)
 - Your PA must be configured to identify cross-border transactions — typically via buyer VAT number format or country code in the invoice data
+- This is **Flow 10.1** in DGFiP terminology — aggregated on schedule
 
 ### Payment Data Reporting
 
@@ -71,6 +74,7 @@
 - Payment data required: invoice reference, payment date, amount paid, and payment method
 - Your PA handles submission once your system signals that payment has been received — the trigger must come from your ERP or cash management system
 - The timeline for this obligation mirrors your mandatory sending date — payment reporting is not optional or deferred
+- This is **Flow 10.2** in DGFiP terminology — aggregated, triggered by ERP payment events
 
 ## Formats and French Requirements
 
