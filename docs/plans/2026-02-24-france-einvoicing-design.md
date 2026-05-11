@@ -1,3 +1,29 @@
+---
+title: France E-Invoicing Man
+created: 2026-02-24
+modified: 2026-05-09
+topics:
+  - france
+  - compliance
+  - e-invoicing
+doc_type: plan
+status: raw
+summary: >
+  title: France E-Invoicing Mandate — Content Design
+keywords:
+  - ai
+  - ap
+  - ar
+  - automation
+  - compliance
+  - design
+  - einvoicing
+  - france
+  - fraud
+  - invoice
+---
+
+
 # France E-Invoicing Mandate — Content Design
 
 **Date:** 2026-02-24

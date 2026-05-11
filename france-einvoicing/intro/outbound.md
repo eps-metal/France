@@ -1,3 +1,27 @@
+---
+title: Sending E-Invoices in
+created: 2026-05-09
+modified: 2026-05-09
+topics:
+  - france
+  - compliance
+  - e-invoicing
+doc_type: guide
+status: raw
+summary: >
+  title: Sending E-Invoices in France — Introduction
+keywords:
+  - ai
+  - ap
+  - ar
+  - compliance
+  - france
+  - fraud
+  - invoice
+  - outbound
+---
+
+
 # Sending E-Invoices in France — Introduction
 
 ## Sending Under the Mandate

@@ -1,3 +1,28 @@
+---
+title: France E-Invoicing Content Implementation Plan
+created: 2026-02-24
+modified: 2026-05-09
+topics:
+  - france
+  - compliance
+  - e-invoicing
+doc_type: plan
+status: raw
+summary: >
+  title: France E-Invoicing Content Implementation Plan
+keywords:
+  - ai
+  - ap
+  - ar
+  - compliance
+  - content
+  - einvoicing
+  - france
+  - fraud
+  - invoice
+---
+
+
 # France E-Invoicing Content Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.

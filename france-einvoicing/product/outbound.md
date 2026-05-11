@@ -1,3 +1,26 @@
+---
+title: Sending E-Invoices — Tungs
+created: 2026-05-09
+modified: 2026-05-09
+topics:
+  - france
+  - compliance
+  - e-invoicing
+doc_type: guide
+status: raw
+summary: >
+  title: Sending E-Invoices — Tungsten Products
+keywords:
+  - ap
+  - ar
+  - compliance
+  - france
+  - fraud
+  - invoice
+  - outbound
+---
+
+
 # Sending E-Invoices — Tungsten Products
 
 ## Where Tungsten Sits in the Outbound Flow

@@ -1,3 +1,33 @@
+---
+title: French eInvoice Reform Playbook — InvoiceAgility
+created: 2026-03-05
+modified: 2026-03-05
+topics:
+  - france-compliance
+  - e-invoicing
+  - go-to-market
+  - caas-playbook
+  - product-strategy
+doc_type: guide
+status: draft
+summary: Strategic playbook for InvoiceAgility platform deployment in French e-invoicing market, covering steering committee alignment, market positioning, use case prioritization, go-to-market strategy, implementation roadmap, and success metrics for France eInvoice reform.
+keywords:
+  - France
+  - InvoiceAgility
+  - IvA
+  - e-invoicing
+  - CaaS
+  - compliance as a service
+  - playbook
+  - go-to-market
+  - market strategy
+  - implementation roadmap
+  - France mandate
+aliases:
+  - France Playbook
+  - InvoiceAgility France
+---
+
 # French eInvoice Reform Playbook — InvoiceAgility
 
 **Source:** CaaS deck, `pipeline/a1-source/product/caas/French eInvoice Reform Playbook/`

@@ -1,3 +1,29 @@
+---
+title: France E-Invoicing — Gap Fill Iteration 2 Implementation Pl
+created: 2026-02-24
+modified: 2026-05-09
+topics:
+  - france
+  - compliance
+  - e-invoicing
+doc_type: plan
+status: raw
+summary: >
+  title: France E-Invoicing — Gap Fill Iteration 2 Implementation Plan
+keywords:
+  - ai
+  - ap
+  - ar
+  - compliance
+  - einvoicing
+  - france
+  - fraud
+  - gaps
+  - invoice
+  - iteration2
+---
+
+
 # France E-Invoicing — Gap Fill Iteration 2 Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.

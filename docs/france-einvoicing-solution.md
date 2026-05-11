@@ -1,9 +1,36 @@
 ---
-title: Tungsten Automation — France E-Invoicing Solution
-doc_type: enablement
-audience: customer-facing
-created: 2026-03-10
+title: Tungsten Automation France E-Invoicing Solution
+created: 2026-03-24
+modified: 2026-03-24
+topics:
+  - france
+  - e-invoicing
+  - invoiceagility
+  - process-director
+  - tax-compliance
+doc_type: guide
 status: draft
+summary: >
+  Customer-facing enablement guide for Tungsten Automation's France e-invoicing solution using InvoiceAgility platform. Covers Y-model architecture with Peppol PA-to-PA transmission, outbound invoice flows (SAP BTE capture, PD OIC enrichment, format conversion), inbound receipt flows, lifecycle status management (CDAR codes), and e-reporting to DGFiP. Documents 44 French use cases including self-billing, down-payment sequences, mixed invoices, recurring payments, partial collection, and intercompany invoicing. Includes onboarding timeline aligned with September 2026 and September 2027 mandate deadlines.
+keywords:
+  - france-e-invoicing
+  - invoiceagility
+  - process-director
+  - peppol
+  - y-model
+  - dgfip-tax-authority
+  - factur-x
+  - ubl-2-1
+  - cii-format
+  - pa-service-provider
+  - cdar-lifecycle
+  - ppf-portal
+  - self-billing
+  - down-payment
+  - en-16931
+aliases:
+  - "France E-Invoicing with InvoiceAgility"
+  - "Tungsten France Compliance Solution"
 ---
 
 # Tungsten Automation — InvoiceAgility and the France E-Invoicing Solution

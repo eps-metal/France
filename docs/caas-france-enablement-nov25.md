@@ -1,3 +1,30 @@
+---
+title: France Mandate — Technical Enablement Update (November 2025)
+created: 2025-11-25
+modified: 2025-11-25
+topics:
+  - france-compliance
+  - e-invoicing
+  - technical-enablement
+  - product-updates
+doc_type: meeting-notes
+status: draft
+summary: Technical enablement and product update session covering France e-invoicing mandate requirements, platform readiness, product roadmap, and delivery timeline. November 2025 update from product leadership.
+keywords:
+  - France
+  - e-invoicing
+  - enablement
+  - technical update
+  - product roadmap
+  - CaaS
+  - compliance
+  - mandate
+  - delivery
+aliases:
+  - France Nov 2025 Enablement
+  - France Technical Update Nov25
+---
+
 # France Mandate – Technical Enablement Update (November 2025)
 
 **Source:** CaaS deck, `pipeline/a1-source/product/caas/2026.1 - France Enablement update -2025-11-25/`

@@ -1,3 +1,32 @@
+---
+title: French E-Invoicing Use Case Inventory
+created: 2026-03-10
+modified: 2026-03-10
+topics:
+  - france-compliance
+  - e-invoicing
+  - use-cases
+  - regulatory-requirements
+doc_type: inventory
+status: draft
+summary: Comprehensive inventory of 42+ French e-invoicing use cases (baseline + variants) defined by DGFiP, mapped to transaction characteristics, volume estimates, and implementation scope. Covers B2B invoicing scenarios including intercompany transactions, applicable to RFP scoping and system design.
+keywords:
+  - France
+  - e-invoicing
+  - DGFiP
+  - use cases
+  - B2B invoicing
+  - Factur-X
+  - UBL
+  - tax compliance
+  - regulatory requirements
+  - volume estimates
+  - implementation scope
+aliases:
+  - French Use Cases
+  - France E-Invoicing Scenarios
+---
+
 # French E-Invoicing Use Case Inventory
 
 **Source:** `pipeline/a1-source/product/caas/french_einvoicing_use_cases_english_updated.xlsx`

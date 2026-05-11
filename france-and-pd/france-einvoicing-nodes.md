@@ -1,3 +1,30 @@
+---
+title: France E-Invoicing — Node Reference
+created: 2026-03-05
+modified: 2026-03-05
+topics:
+  - france-compliance
+  - e-invoicing
+  - technical-architecture
+  - process-design
+doc_type: reference
+status: draft
+summary: Functional node architecture describing how the Tungsten stack fulfills French e-invoicing mandate requirements, including node definitions, data flows, process steps, and system interactions for end-to-end compliance.
+keywords:
+  - France
+  - e-invoicing
+  - node architecture
+  - functional design
+  - process flows
+  - system integration
+  - Process Director
+  - Tungsten
+  - mandate compliance
+aliases:
+  - France Node Reference
+  - France Architecture Nodes
+---
+
 # France E-Invoicing — Node Reference
 
 How the Tungsten stack fulfills the French e-invoicing mandate, described as a set of functional nodes and the flows between them.

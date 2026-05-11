@@ -1,3 +1,31 @@
+---
+title: French E-Invoicing Use Cases — Priority & Volume Analysis
+created: 2026-03-18
+modified: 2026-03-18
+topics:
+  - france-compliance
+  - e-invoicing
+  - market-analysis
+  - volume-estimates
+doc_type: analysis
+status: draft
+summary: Cross-market analysis of French B2B e-invoicing use case priority and transaction volumes, covering all 42+ use cases, estimated annual volumes (~2-2.5 billion B2B invoices), transaction value concentration, and implementation prioritization for InvoiceAgility platform rollout across sectors.
+keywords:
+  - France
+  - e-invoicing
+  - volume analysis
+  - B2B invoicing
+  - use case priority
+  - transaction volumes
+  - DGFiP
+  - market estimates
+  - implementation priority
+  - cross-sector analysis
+aliases:
+  - French Volume Analysis
+  - France Invoicing Priority
+---
+
 # French E-Invoicing Use Cases: Priority & Volume Analysis
 
 **Prepared:** 2026-03-18

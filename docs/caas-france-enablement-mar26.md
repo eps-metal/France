@@ -1,3 +1,31 @@
+---
+title: France Mandate — Technical Enablement Update (March 2026)
+created: 2026-03-01
+modified: 2026-03-01
+topics:
+  - france-compliance
+  - e-invoicing
+  - technical-enablement
+  - product-updates
+doc_type: meeting-notes
+status: draft
+summary: Technical enablement and product update session covering France e-invoicing mandate requirements, platform capability status, implementation guidance, and delivery progress. March 2026 update from product leadership.
+keywords:
+  - France
+  - e-invoicing
+  - enablement
+  - technical update
+  - product roadmap
+  - CaaS
+  - compliance
+  - mandate
+  - implementation
+  - delivery status
+aliases:
+  - France Mar 2026 Enablement
+  - France Technical Update Mar26
+---
+
 # France Mandate – Technical Enablement Update (March 2026)
 
 **Source:** CaaS deck, `pipeline/a1-source/product/caas/FRANCE enablement_Mar 26/`

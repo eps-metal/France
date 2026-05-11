@@ -1,3 +1,26 @@
+---
+title: Receiving E-Invoices — T
+created: 2026-05-09
+modified: 2026-05-09
+topics:
+  - france
+  - compliance
+  - e-invoicing
+doc_type: guide
+status: raw
+summary: >
+  title: Receiving E-Invoices — Tungsten Products
+keywords:
+  - ap
+  - ar
+  - compliance
+  - france
+  - fraud
+  - inbound
+  - invoice
+---
+
+
 # Receiving E-Invoices — Tungsten Products
 
 ## Where Tungsten Sits in the Inbound Flow

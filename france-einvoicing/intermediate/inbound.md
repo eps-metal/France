@@ -1,3 +1,27 @@
+---
+title: Receiving E-Invoices in France — Inter
+created: 2026-05-09
+modified: 2026-05-09
+topics:
+  - france
+  - compliance
+  - e-invoicing
+doc_type: guide
+status: raw
+summary: >
+  title: Receiving E-Invoices in France — Intermediate
+keywords:
+  - ai
+  - ap
+  - ar
+  - compliance
+  - france
+  - fraud
+  - inbound
+  - invoice
+---
+
+
 # Receiving E-Invoices in France — Intermediate
 
 ## The E-Invoicing Ecosystem

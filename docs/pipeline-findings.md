@@ -1,3 +1,30 @@
+---
+title: Pipeline Source Findings — French E-Invoicing Mandate
+created: 2026-03-10
+modified: 2026-03-10
+topics:
+  - france-compliance
+  - e-invoicing
+  - research-aggregation
+  - internal-content
+doc_type: reference
+status: draft
+summary: Aggregated findings and primary source inventory from internal pipeline research on French e-invoicing mandate, including workshop action items, mandate specifications, use case documentation, enablement materials, and product planning artifacts for France eInvoice compliance.
+keywords:
+  - France
+  - e-invoicing
+  - research findings
+  - source inventory
+  - mandate research
+  - workshop findings
+  - specification review
+  - product planning
+  - compliance
+aliases:
+  - France Findings
+  - Pipeline France Research
+---
+
 # Pipeline Source Findings — French E-Invoicing Mandate
 
 > Files found in `~/projects/pipeline` with French e-invoicing content modified within the last four months (after 2025-11-10). Searched 2026-03-10.

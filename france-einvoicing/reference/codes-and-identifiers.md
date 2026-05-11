@@ -1,3 +1,28 @@
+---
+title: France E-Invoicing: Codes & Identifiers Reference
+created: 2026-05-09
+modified: 2026-05-09
+topics:
+  - france
+  - compliance
+  - e-invoicing
+doc_type: guide
+status: raw
+summary: >
+  title: France E-Invoicing: Codes & Identifiers Reference
+keywords:
+  - ai
+  - ap
+  - ar
+  - codes
+  - compliance
+  - france
+  - fraud
+  - identifiers
+  - invoice
+---
+
+
 # France E-Invoicing: Codes & Identifiers Reference
 
 ---

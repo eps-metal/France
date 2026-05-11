@@ -1,3 +1,30 @@
+---
+title: France E-Invoicing — Open Items
+created: 2026-03-05
+modified: 2026-03-05
+topics:
+  - france-compliance
+  - e-invoicing
+  - open-issues
+  - architecture-refinement
+doc_type: scratch
+status: draft
+summary: Tracked open items and subsequent investigation tasks related to French e-invoicing node architecture, including Process Director OIC routing, mandate requirement mapping, and pending technical clarifications.
+keywords:
+  - France
+  - e-invoicing
+  - open items
+  - Process Director
+  - OIC
+  - routing
+  - configuration
+  - mandate
+  - architecture refinement
+aliases:
+  - France Open Items
+  - France Followups
+---
+
 # France E-Invoicing — Open Items
 
 Tracked items for subsequent investigation and expansion related to `france-einvoicing-nodes.md`.
